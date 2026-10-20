@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>文明 · 社会主义核心价值观</title>
+<style>
+/* ============ 设计系统：轻松可爱 · 淡色跳动 ============ */
+:root{
+  --bg:#FAF7F0; --bg2:#F0EDE4; --bg3:#EEF3F6;
+  --ink:#2E2A24; --sub:#6B6154;
+  --coral:#E2725B; --honey:#F2B84B; --mint:#7FBFA5; --lav:#8A9BD4; --cool:#4A7A96;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",SimSun,serif;
+  --sans:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:#E7E1D3;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+::selection{background:rgba(242,184,75,.45)}
+button{font-family:inherit}
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:1920px;height:1080px;flex:none;transform-origin:center center;
+  background:var(--bg);border-radius:8px;overflow:hidden;
+  box-shadow:0 30px 90px rgba(46,42,36,.22)}
+
+/* ---- 页面与翻页 ---- */
+.page{position:absolute;inset:0;padding:84px 110px;background:var(--bg);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .5s var(--ease),transform .5s var(--ease),visibility 0s .5s}
+.page.is-active{opacity:1;visibility:visible;transform:none;z-index:2;
+  transition:opacity .5s var(--ease),transform .5s var(--ease),visibility 0s 0s}
+
+/* ---- 动效原语（全部挂 .is-active，翻回重播） ---- */
+.rise{opacity:0;transform:translateY(18px);
+  transition:opacity .65s var(--ease),transform .65s var(--ease);transition-delay:var(--d,0ms)}
+.is-active .rise{opacity:1;transform:none}
+.ch{display:inline-block;opacity:0;transform:translateY(14px) rotate(2.5deg);
+  transition:opacity .5s var(--ease),transform .5s var(--ease);
+  transition-delay:calc(var(--base,0ms) + var(--i)*var(--step,48ms))}
+.is-active .ch{opacity:1;transform:none}
+.pop{opacity:0;transform:scale(.5);
+  transition:opacity .5s var(--ease),transform .55s cubic-bezier(.34,1.45,.64,1);transition-delay:var(--d,0ms)}
+.is-active .pop{opacity:1;transform:scale(1)}
+.grow-y{transform:scaleY(0);transform-origin:bottom;
+  transition:transform var(--dur,1s) var(--ease);transition-delay:var(--d,0ms)}
+.is-active .grow-y{transform:scaleY(1)}
+.grow-x{transform:scaleX(0);transform-origin:left;
+  transition:transform var(--dur,1s) var(--ease);transition-delay:var(--d,0ms)}
+.is-active .grow-x{transform:scaleX(1)}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;fill:none;
+  transition:stroke-dashoffset var(--dur,1s) var(--ease);transition-delay:var(--d,0ms)}
+.is-active .draw{stroke-dashoffset:0}
+
+/* ---- 环境小装饰（缓慢循环，不属于入场主运动） ---- */
+.doodle{position:absolute;pointer-events:none;z-index:1}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(0deg) scale(1)}50%{transform:translateY(-26px) rotate(12deg) scale(1.07)}}
+@keyframes floaty2{0%,100%{transform:translateY(0) rotate(0deg) scale(1)}50%{transform:translateY(20px) rotate(-11deg) scale(.93)}}
+@keyframes spinslow{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.14)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes bob{0%,100%{transform:translateX(0) scale(1)}50%{transform:translateX(30px) scale(1.08)}}
+.f-a{animation:floaty 6s ease-in-out infinite}
+.f-b{animation:floaty2 7.4s ease-in-out infinite;animation-delay:-2.2s}
+.f-c{animation:spinslow 15s ease-in-out infinite}
+.f-d{animation:bob 6.4s ease-in-out infinite;animation-delay:-1.4s}
+.doodle:nth-of-type(2n){animation-delay:-1.8s}
+.doodle:nth-of-type(3n){animation-delay:-3.1s}
+
+/* ---- 通用组件 ---- */
+.foot{position:absolute;left:110px;right:110px;bottom:42px;font-size:15px;line-height:1.7;color:var(--sub);z-index:5}
+.quote{font-family:var(--serif)}
+.src{font-size:15px;color:var(--sub);line-height:1.7}
+.card{background:#fff;border:1.5px solid #EDE6D6;border-radius:20px;box-shadow:0 12px 34px rgba(46,42,36,.07)}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:999px;
+  background:#fff;border:1.5px solid #EAE2D0;font-weight:700}
+.mark{background:linear-gradient(transparent 58%,rgba(242,184,75,.5) 58%);border-radius:3px;padding:0 2px}
+.coral{color:var(--coral)}
+.wavy{position:relative;display:inline-block}
+.wavy .wave{position:absolute;left:-2%;right:-2%;bottom:-.28em;width:104%;height:.32em;overflow:visible}
+.wavy .wave path{fill:none;stroke:var(--honey);stroke-width:5;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset .9s var(--ease);transition-delay:var(--d,.4s)}
+.is-active .wavy .wave path{stroke-dashoffset:0}
+
+/* ---- 页眉标题（不用 eyebrow，直接上陈述句） ---- */
+.h-title{font-size:52px;font-weight:800;letter-spacing:.02em;line-height:1.25}
+.h-sub{font-size:22px;color:var(--sub);margin-top:14px;line-height:1.6}
+
+/* ---- HUD：页码 + 进度（外壳统一渲染，单页不自带页码） ---- */
+#hud{position:absolute;right:52px;bottom:38px;z-index:60;display:flex;align-items:center;gap:14px}
+#hud .pnum{display:flex;align-items:baseline;gap:6px;font-weight:800;color:var(--sub);font-size:20px}
+#hud .pnum .cur{color:var(--coral);font-size:30px}
+#hud .nbtn{width:46px;height:46px;border-radius:50%;border:2px solid #E4DCC8;background:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease),border-color .2s}
+#hud .nbtn:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(46,42,36,.14);border-color:var(--honey)}
+#hud .nbtn:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+#hud .nbtn svg{width:18px;height:18px;stroke:var(--ink);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#progress{position:absolute;left:0;bottom:0;height:7px;width:0;background:var(--honey);
+  border-radius:0 4px 4px 0;z-index:60;transition:width .55s var(--ease)}
+
+/* ---- 动效减弱：全关，静态也成立 ---- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rise,.ch,.pop{opacity:1!important;transform:none!important}
+  .grow-y,.grow-x{transform:none!important}
+  .draw,.wavy .wave path{stroke-dashoffset:0!important}
+  .page{opacity:1;visibility:visible;transform:none;position:absolute;display:none}
+  .page.is-active{display:block}
+  #p04 .wm-intro{display:none}
+}
+
+/* ================= 页 01 · 封面 ================= */
+#p01{padding:0}
+#p01 .giant-li{position:absolute;right:-60px;top:90px;font-family:var(--serif);font-weight:700;
+  font-size:760px;line-height:1;color:#F0EBDD;transform:rotate(4deg);user-select:none;z-index:0}
+#p01 .hero{position:absolute;left:170px;top:0;bottom:0;width:1100px;display:flex;flex-direction:column;justify-content:center;z-index:3}
+#p01 .title-row{display:flex;align-items:flex-end;gap:18px}
+#p01 .wen-svg{width:300px;height:300px;flex:none}
+#p01 .wen-svg path{stroke:var(--ink);stroke-width:12;stroke-linecap:round;stroke-linejoin:round}
+#p01 .ming{font-size:268px;font-weight:800;line-height:1;letter-spacing:.02em;transform-origin:left bottom}
+#p01 .seal{width:34px;height:34px;border-radius:50%;background:var(--coral);margin:0 0 46px 6px;flex:none;
+  box-shadow:0 6px 16px rgba(226,114,91,.4)}
+#p01 .subtitle{margin-top:44px;font-size:30px;font-weight:700;letter-spacing:.14em;color:var(--ink)}
+#p01 .tagline{margin-top:22px;font-size:36px;font-weight:600;color:var(--ink)}
+#p01 .sign{margin-top:96px;font-size:22px;color:var(--sub);display:flex;align-items:center;gap:14px}
+#p01 .sign .blank{display:inline-block;min-width:72px;border-bottom:2.5px dashed #C9BFA8;text-align:center;padding:0 10px 4px;color:#A89D88}
+#p01 .hint{position:absolute;left:170px;bottom:56px;font-size:17px;color:#A89D88;display:flex;align-items:center;gap:10px;z-index:3}
+#p01 .hint svg{width:30px;height:14px;stroke:var(--coral);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ================= 页 02 · 分工页 ================= */
+#p02{background:#fff;display:flex;flex-direction:column}
+#p02 .wrap{display:flex;gap:70px;flex:1;min-height:0;align-items:stretch;margin-top:28px}
+#p02 .left{flex:1.25;display:flex;flex-direction:column}
+#p02 .sheet{margin-top:40px;flex:1;border:2.5px dashed #D9CFBA;border-radius:24px;padding:44px 50px;
+  display:flex;flex-direction:column;gap:34px;background:#FDFCF8}
+#p02 .sheet .todo-note{font-size:26px;font-weight:800;color:var(--coral);display:flex;align-items:center;gap:14px}
+#p02 .sheet .todo-note .dot{width:14px;height:14px;border-radius:50%;background:var(--honey)}
+#p02 .row{display:flex;align-items:flex-end;gap:26px;font-size:21px;color:var(--sub)}
+#p02 .row .lab{flex:none;font-weight:700;color:var(--ink)}
+#p02 .row .line{flex:1;border-bottom:2.5px dotted #CFC4AB;height:34px}
+#p02 .row .line.short{flex:.55}
+#p02 .right{flex:1;border:2.5px dashed #D9CFBA;border-radius:24px;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+#p02 .right .ph{text-align:center;color:#9AA7B2;font-size:20px;font-weight:700;letter-spacing:.2em}
+#p02 .right .ph .big{font-size:88px;font-family:var(--serif);color:#C9D6DE;display:block;margin-bottom:14px;letter-spacing:.1em}
+
+/* 名单区（2026-10-20 填入真实成员） */
+#p02 .sheet{justify-content:center;gap:30px}
+#p02 .shead{font-size:15px;font-weight:800;color:var(--sub);letter-spacing:.16em}
+#p02 .mrow{display:flex;align-items:center;gap:16px;font-size:30px;font-weight:800}
+#p02 .mrow .dot{width:13px;height:13px;border-radius:50%;flex:none}
+#p02 .role{font-size:16px;font-weight:800;color:#fff;border-radius:999px;padding:6px 18px;letter-spacing:.02em}
+#p02 .role.r1{background:var(--coral)}
+#p02 .role.r2{background:var(--lav)}
+#p02 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px}
+#p02 .mchip{background:#fff;border:1.5px solid #EDE6D6;border-radius:14px;padding:15px 22px;
+  font-size:25px;font-weight:700;display:flex;align-items:center;gap:12px;box-shadow:0 6px 16px rgba(46,42,36,.05)}
+#p02 .mchip .d{width:9px;height:9px;border-radius:50%;flex:none;background:var(--honey)}
+#p02 .mchip:nth-child(2) .d{background:var(--mint)}
+#p02 .mchip:nth-child(3) .d{background:var(--lav)}
+#p02 .mchip:nth-child(4) .d{background:var(--coral)}
+#p02 .mchip:nth-child(5) .d{background:var(--cool)}
+#p02 .mchip:nth-child(6) .d{background:var(--honey)}
+</style>
+</head>
+<body>
+<div id="viewport">
+<main id="stage">
+
+<!-- ========== 页 01 · 封面 ========== -->
+<section class="page" id="p01">
+  <div class="giant-li" data-bleed="1">礼</div>
+
+  <svg class="doodle f-a" style="right:360px;top:120px" width="130" height="34" viewBox="0 0 130 34"><path d="M6 22 C 26 4, 44 32, 66 16 S 104 4, 124 20" fill="none" stroke="#F2B84B" stroke-width="6" stroke-linecap="round"/></svg>
+  <svg class="doodle f-b" style="right:180px;top:420px" width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="18" fill="none" stroke="#7FBFA5" stroke-width="6"/></svg>
+  <svg class="doodle f-c" style="right:520px;bottom:170px" width="44" height="44" viewBox="0 0 44 44"><path d="M22 6v32M6 22h32" stroke="#8A9BD4" stroke-width="7" stroke-linecap="round"/></svg>
+  <svg class="doodle f-d" style="right:120px;bottom:110px" width="90" height="26" viewBox="0 0 90 26"><circle cx="13" cy="13" r="7" fill="#E2725B"/><circle cx="45" cy="13" r="7" fill="#F2B84B"/><circle cx="77" cy="13" r="7" fill="#7FBFA5"/></svg>
+  <svg class="doodle f-b" style="left:120px;top:110px" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="9" fill="#F2B84B"/></svg>
+
+  <div class="hero">
+    <div class="title-row">
+      <svg class="wen-svg" viewBox="0 0 220 220" aria-label="文">
+        <path class="draw" pathLength="1" style="--d:300ms;--dur:.45s" d="M106 20 L120 44"/>
+        <path class="draw" pathLength="1" style="--d:800ms;--dur:.6s"  d="M28 80 L192 80"/>
+        <path class="draw" pathLength="1" style="--d:1450ms;--dur:.8s" d="M130 80 C 120 118, 90 158, 46 194"/>
+        <path class="draw" pathLength="1" style="--d:2300ms;--dur:.8s" d="M92 110 C 112 144, 142 174, 184 196"/>
+      </svg>
+      <div class="ming rise" style="--d:2650ms">明</div>
+      <div class="seal pop" style="--d:3350ms"></div>
+    </div>
+    <div class="subtitle rise" style="--d:3500ms">社会主义核心价值观 · 国家层面的价值目标</div>
+    <div class="tagline rise" style="--d:3750ms">从「礼仪之邦」到现代公民 —— <span class="wavy">我们复兴什么？<svg class="wave" viewBox="0 0 200 12" preserveAspectRatio="none"><path pathLength="1" style="--d:4100ms" d="M2 8 C 14 2, 26 12, 40 7 S 66 2, 80 7 S 106 12, 120 7 S 146 2, 160 7 S 186 12, 198 7"/></svg></span></div>
+    <div class="sign rise" style="--d:4300ms">
+      <span class="blank">XX</span>大学<span class="blank">XX</span>学院 · 第<span class="blank">X</span>小组
+    </div>
+  </div>
+
+  <div class="hint rise" style="--d:4600ms">
+    <svg viewBox="0 0 30 14"><path d="M2 7 h22 M18 2 l6 5 -6 5"/></svg>
+    空格或方向键翻页
+  </div>
+</section>
+
+<!-- ========== 页 02 · 分工页（不带页码） ========== -->
+<section class="page" id="p02" data-no-pagenum>
+  <svg class="doodle f-a" style="right:90px;top:70px" width="110" height="30" viewBox="0 0 130 34"><path d="M6 22 C 26 4, 44 32, 66 16 S 104 4, 124 20" fill="none" stroke="#7FBFA5" stroke-width="6" stroke-linecap="round"/></svg>
+  <div class="h-title rise" style="--d:150ms">分工</div>
+  <div class="h-sub rise" style="--d:300ms">8 个人，一人一块。</div>
+  <div class="wrap">
+    <div class="left">
+      <div class="sheet rise" style="--d:450ms">
+        <div class="shead">核心角色</div>
+        <div class="mrow"><span class="dot" style="background:var(--coral)"></span><b>郭谨漠</b><span class="role r1">组长</span></div>
+        <div class="mrow"><span class="dot" style="background:var(--lav)"></span><b>贾硕</b><span class="role r2">作业总负责人</span></div>
+        <div class="shead" style="margin-top:4px">组员 · 6 人</div>
+        <div class="mgrid">
+          <div class="mchip"><span class="d"></span>王慧琴</div>
+          <div class="mchip"><span class="d"></span>王泓儒</div>
+          <div class="mchip"><span class="d"></span>史若漩</div>
+          <div class="mchip"><span class="d"></span>张志硕</div>
+          <div class="mchip"><span class="d"></span>郭瑞鑫</div>
+          <div class="mchip"><span class="d"></span>钟荣</div>
+        </div>
+      </div>
+    </div>
+    <div class="right rise" style="--d:650ms">
+      <svg class="doodle f-c" style="left:60px;top:60px" width="40" height="40" viewBox="0 0 44 44"><path d="M22 6v32M6 22h32" stroke="#B9CBDA" stroke-width="7" stroke-linecap="round"/></svg>
+      <svg class="doodle f-b" style="right:70px;bottom:70px" width="46" height="46" viewBox="0 0 52 52"><circle cx="26" cy="26" r="17" fill="none" stroke="#B9CBDA" stroke-width="6"/></svg>
+      <div class="ph"><span class="big">图</span>小组合影 / 插图位</div>
+    </div>
+  </div>
+</section>
+<style>
+/* ================= 页 03 · 开场钩子 ================= */
+#p03 .cards{display:flex;gap:44px;margin-top:64px}
+#p03 .qcard{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:24px;padding:46px 40px 42px;
+  box-shadow:0 14px 36px rgba(46,42,36,.07);position:relative;
+  transition:opacity .65s var(--ease),transform .65s var(--ease),box-shadow .25s var(--ease);
+  opacity:0;transform:translateY(26px);transition-delay:var(--d,0ms)}
+#p03.is-active .qcard{opacity:1;transform:translateY(0)}
+#p03 .qcard:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(46,42,36,.12)}
+#p03 .qnum{width:58px;height:58px;margin-bottom:26px}
+#p03 .qnum circle{fill:none;stroke-width:4;stroke-linecap:round}
+#p03 .qnum text{font-family:var(--sans);font-weight:800;font-size:28px;fill:var(--ink)}
+#p03 .qtext{font-size:27px;font-weight:700;line-height:1.65}
+#p03 .guide{margin-top:72px;font-size:30px;line-height:1.8;font-weight:600;max-width:1500px}
+#p03 .tail{margin-top:30px;font-size:22px;color:var(--sub);display:flex;align-items:center;gap:12px}
+#p03 .tail .pill{background:var(--bg2);border-radius:999px;padding:6px 18px;font-weight:700;color:var(--ink)}
+
+/* ================= 页 04 · 是什么① ================= */
+#p04 .layers{margin-top:56px;display:flex;flex-direction:column;gap:30px;max-width:1420px;position:relative;z-index:2}
+#p04 .layer{display:flex;align-items:center;gap:34px;opacity:0;transform:translateY(20px);
+  transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:var(--d,0ms)}
+#p04.is-active .layer{opacity:1;transform:none}
+#p04 .words{display:flex;gap:18px;flex:none}
+#p04 .word{width:128px;height:128px;border-radius:26px;display:flex;align-items:center;justify-content:center;
+  font-size:44px;font-weight:800;background:#fff;border:1.5px solid #EDE6D6;box-shadow:0 8px 22px rgba(46,42,36,.06)}
+#p04 .layer.l1 .word{background:var(--coral);border-color:var(--coral);color:#fff;box-shadow:0 10px 26px rgba(226,114,91,.3)}
+#p04 .tag{font-size:24px;font-weight:700;color:var(--sub);display:flex;align-items:center;gap:14px}
+#p04 .layer.l1 .tag{color:var(--coral);font-size:27px}
+#p04 .tag .arr{width:40px;height:20px;flex:none}
+#p04 .tag .arr path{stroke:currentColor;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p04 .quotebox{margin-top:54px;max-width:1420px;background:var(--bg2);border-radius:20px;padding:30px 38px}
+#p04 .quotebox p{font-family:var(--serif);font-size:23px;line-height:1.8}
+#p04 .quotebox .src{margin-top:12px}
+
+/* ---- 页 04 开场：像素点拼「文明」→ 大字浮现 → 回缩归位 ---- */
+#p04 .wm-intro{position:absolute;inset:0;z-index:1;pointer-events:none}
+#p04 .wm-dot{position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;will-change:transform,opacity}
+#p04 .wm-giant{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);
+  font-family:var(--serif);font-weight:800;font-size:860px;line-height:1;letter-spacing:.02em;
+  color:var(--coral);white-space:nowrap;opacity:0;will-change:transform,opacity;user-select:none}
+#p04 .wm-frame{position:absolute;z-index:6;pointer-events:none;overflow:visible}
+
+/* ================= 页 05 · 是什么② 三层同心圆 ================= */
+#p05 .cols{display:flex;gap:70px;margin-top:18px;align-items:center}
+#p05 .rings{width:680px;height:680px;flex:none;position:relative}
+#p05 .rings .rlabel{font-family:var(--sans);font-weight:800;letter-spacing:.01em}
+#p05 .inlabel{font-family:var(--sans);font-weight:800;letter-spacing:.02em}
+#p05 .p05-guides{display:none;pointer-events:none}
+#p05 .p05-guides path{fill:none;stroke:#E2725B;stroke-width:1.2;stroke-dasharray:5 4;opacity:.9}
+body.show-guides #p05 .p05-guides{display:block}
+#p05 .legend{flex:1;display:flex;flex-direction:column;gap:26px}
+#p05 .lrow{display:flex;gap:22px;align-items:flex-start;background:#fff;border:1.5px solid #EDE6D6;border-radius:18px;
+  padding:24px 28px;box-shadow:0 8px 22px rgba(46,42,36,.05);
+  opacity:0;transform:translateX(24px);transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:var(--d,0ms)}
+#p05.is-active .lrow{opacity:1;transform:none}
+#p05 .lrow .no{width:44px;height:44px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:22px;color:#fff}
+#p05 .lrow h3{font-size:25px;font-weight:800;margin-bottom:6px}
+#p05 .lrow p{font-size:19px;color:var(--sub);line-height:1.65}
+#p05 .oneline{margin-top:34px;font-size:24px;font-weight:600;line-height:1.7}
+
+/* ================= 页 06 · 是什么③ 结果×过程 ================= */
+#p06 .cols{display:flex;gap:0;margin-top:56px;position:relative}
+#p06 .col{flex:1;padding:10px 60px}
+#p06 .midline{position:absolute;left:50%;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--honey)}
+#p06 .klabel{display:inline-block;font-size:21px;font-weight:800;padding:8px 22px;border-radius:999px;margin-bottom:28px}
+#p06 .col.result .klabel{background:rgba(226,114,91,.14);color:var(--coral)}
+#p06 .col.process .klabel{background:rgba(127,191,165,.18);color:#4E8F76}
+#p06 .bigword{font-size:74px;font-weight:800;letter-spacing:.04em;line-height:1.2;margin-bottom:26px}
+#p06 .col p{font-family:var(--serif);font-size:23px;line-height:1.9}
+#p06 .col .src{margin-top:16px}
+
+/* ================= 页 07 · 数据页：落差 ================= */
+#p07{background:var(--bg3)}
+#p07 .cols{display:flex;gap:64px;margin-top:36px}
+#p07 .chart{flex:1.55;background:#fff;border:1.5px solid #E2E9EE;border-radius:26px;padding:102px 48px 34px;
+  box-shadow:0 14px 38px rgba(46,42,36,.07);position:relative}
+#p07 .plot{position:relative;height:640px;display:flex;align-items:flex-end;justify-content:center;gap:180px;
+  border-bottom:3px solid #D8E0E6}
+#p07 .barwrap{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+#p07 .bar{width:190px;border-radius:16px 16px 0 0;position:relative}
+#p07 .bar.b1{background:var(--coral);height:560px;box-shadow:0 -6px 24px rgba(226,114,91,.25)}
+#p07 .bar.b2{background:var(--lav);height:118px}
+#p07 .bar.b2 .bnum{background:rgba(255,255,255,.88);border-radius:14px;padding:4px 16px}
+#p07 .gap{position:absolute;bottom:118px;height:442px;width:190px;border-radius:16px 16px 0 0;
+  background:repeating-linear-gradient(45deg,rgba(138,155,212,.28) 0 10px,rgba(138,155,212,.06) 10px 22px);
+  border:2px dashed #8A9BD4;border-bottom:none;transform-origin:bottom;
+  transform:scaleY(0);transition:transform .5s var(--ease);transition-delay:2.3s}
+#p07.is-active .gap{transform:scaleY(1)}
+#p07 .bnum{position:absolute;top:-92px;left:50%;transform:translateX(-50%);white-space:nowrap;text-align:center}
+#p07 .bnum .n{font-size:56px;font-weight:800;letter-spacing:.01em}
+#p07 .bar.b1 .bnum .n{color:var(--coral)}
+#p07 .bar.b2 .bnum .n{color:#6B7FC0}
+#p07 .bar.b2 .bnum{top:-88px}
+#p07 .bnum .u{font-size:22px;font-weight:700;color:var(--sub)}
+#p07 .blabel{margin-top:18px;font-size:21px;font-weight:700;color:var(--sub);text-align:center;line-height:1.5;max-width:240px}
+#p07 .gap-tag{position:absolute;left:50%;top:220px;transform:translateX(-50%) rotate(-2deg);
+  background:#fff;border:2px dashed var(--coral);color:var(--coral);border-radius:16px;
+  padding:14px 22px;font-size:24px;font-weight:800;white-space:nowrap;box-shadow:0 10px 24px rgba(46,42,36,.1);
+  opacity:0;transition:opacity .5s var(--ease) 2.7s,transform .5s var(--ease) 2.7s}
+#p07.is-active .gap-tag{opacity:1;transform:translateX(-50%) rotate(-2deg)}
+#p07 .gap-tag small{display:block;font-size:16px;font-weight:700;color:var(--sub);margin-top:4px}
+#p07 .side{flex:1;display:flex;flex-direction:column;gap:30px}
+#p07 .sidecard{background:#fff;border:1.5px solid #E2E9EE;border-radius:22px;padding:30px 34px;box-shadow:0 10px 26px rgba(46,42,36,.06)}
+#p07 .sidecard h3{font-size:21px;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+#p07 .sidecard h3 .dot{width:12px;height:12px;border-radius:50%;background:var(--honey)}
+#p07 .arrowline{display:flex;align-items:center;gap:18px;font-size:24px;font-weight:800}
+#p07 .arrowline .yr{font-size:18px;color:var(--sub);font-weight:700;display:block}
+#p07 .arrowline .arr{flex:1;height:20px;position:relative}
+#p07 .arrowline .arr svg{position:absolute;inset:0;width:100%;height:100%}
+#p07 .arrowline .arr path{stroke:var(--mint);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p07 .rrow{display:flex;align-items:center;gap:16px;margin-top:16px}
+#p07 .rrow .rlab{width:190px;flex:none;font-size:19px;font-weight:700;line-height:1.4}
+#p07 .rbar{flex:1;height:26px;border-radius:999px;background:#EDF1F4;overflow:hidden}
+#p07 .rbar i{display:block;height:100%;border-radius:999px;background:var(--mint)}
+#p07 .rrow:nth-child(3) .rbar i{background:var(--honey)}
+#p07 .rrow:nth-child(4) .rbar i{background:var(--lav)}
+#p07 .rrow .rval{width:86px;flex:none;font-size:22px;font-weight:800;text-align:right}
+#p07 .oneline{margin-top:34px;font-size:30px;font-weight:800}
+#p07 .foot{color:#5D6B76}
+</style>
+
+<!-- ========== 页 03 · 开场钩子 ========== -->
+<section class="page" id="p03">
+  <svg class="doodle f-b" style="right:100px;top:80px" width="48" height="48" viewBox="0 0 52 52"><circle cx="26" cy="26" r="17" fill="none" stroke="#F2B84B" stroke-width="6"/></svg>
+  <div class="h-title rise" style="--d:150ms">三个小场景，先在心里举个手</div>
+  <div class="h-sub rise" style="--d:320ms">不用回答出来，诚实面对自己就行。</div>
+  <div class="cards">
+    <div class="qcard" style="--d:500ms">
+      <svg class="qnum" viewBox="0 0 58 58"><circle cx="29" cy="29" r="24" stroke="#E2725B" class="draw" pathLength="1" style="--d:900ms;--dur:.6s" transform="rotate(-90 29 29)"/><text x="29" y="39" text-anchor="middle">1</text></svg>
+      <div class="qtext">当你进电梯的时候，在电梯门将关的瞬间，你愿不愿意等一下后面急促的脚步。<br><span class="coral">你会等一下吗？</span></div>
+    </div>
+    <div class="qcard" style="--d:700ms">
+      <svg class="qnum" viewBox="0 0 58 58"><circle cx="29" cy="29" r="24" stroke="#F2B84B" class="draw" pathLength="1" style="--d:1100ms;--dur:.6s" transform="rotate(-90 29 29)"/><text x="29" y="39" text-anchor="middle">2</text></svg>
+      <div class="qtext">当你玩了很晚回家的时候，在楼里，你会不会轻声轻脚？<br><span style="color:#D19A2E">你会轻一点吗？</span></div>
+    </div>
+    <div class="qcard" style="--d:900ms">
+      <svg class="qnum" viewBox="0 0 58 58"><circle cx="29" cy="29" r="24" stroke="#7FBFA5" class="draw" pathLength="1" style="--d:1300ms;--dur:.6s" transform="rotate(-90 29 29)"/><text x="29" y="39" text-anchor="middle">3</text></svg>
+      <div class="qtext">群里在传一张截图，说某个同学干了什么。<br><span style="color:#4E8F76">你会转发吗？</span></div>
+    </div>
+  </div>
+  <div class="guide rise" style="--d:1500ms">
+    这三个场景里没有一个是「大是大非」，全都是小事。但文明这个东西，恰恰不在大是大非上，而在<span class="wavy coral" style="font-weight:800">没人看着的小事<svg class="wave" viewBox="0 0 200 12" preserveAspectRatio="none"><path pathLength="1" style="--d:2000ms" d="M2 8 C 14 2, 26 12, 40 7 S 66 2, 80 7 S 106 12, 120 7 S 146 2, 160 7 S 186 12, 198 7"/></svg></span>上。
+  </div>
+  <div class="tail rise" style="--d:2300ms">
+    先别急着回答 <span class="pill">第 24 页，我们回收这三个场景</span>
+  </div>
+</section>
+
+<!-- ========== 页 04 · 是什么① ========== -->
+<section class="page" id="p04">
+  <svg class="doodle f-a rise" style="right:110px;top:90px;--d:5600ms" width="42" height="42" viewBox="0 0 44 44"><path d="M22 6v32M6 22h32" stroke="#7FBFA5" stroke-width="7" stroke-linecap="round"/></svg>
+  <div class="wm-intro" data-bleed="1">
+    <div class="wm-dots"></div>
+    <div class="wm-giant">文明</div>
+  </div>
+  <svg class="wm-frame" data-bleed="1"><rect class="draw" pathLength="1" style="--d:5550ms;--dur:.7s" fill="none" stroke="#E2725B" stroke-width="5" stroke-linecap="round"/></svg>
+  <div class="h-title rise" style="--d:4300ms">「文明」在 24 个字里，有专属位置</div>
+  <div class="layers">
+    <div class="layer l1" style="--d:4750ms">
+      <div class="words"><div class="word">富</div><div class="word">强</div><div class="word">民</div><div class="word">主</div><div class="word" style="box-shadow:0 12px 30px rgba(226,114,91,.45)">文</div><div class="word">明</div><div class="word">和</div><div class="word">谐</div></div>
+    </div>
+    <div class="layer" style="--d:5000ms">
+      <div class="words"><div class="word">自</div><div class="word">由</div><div class="word">平</div><div class="word">等</div><div class="word">公</div><div class="word">正</div><div class="word">法</div><div class="word">治</div></div>
+      <div class="tag">社会层面的价值取向</div>
+    </div>
+    <div class="layer" style="--d:5250ms">
+      <div class="words"><div class="word">爱</div><div class="word">国</div><div class="word">敬</div><div class="word">业</div><div class="word">诚</div><div class="word">信</div><div class="word">友</div><div class="word">善</div></div>
+      <div class="tag">公民个人层面的价值准则</div>
+    </div>
+  </div>
+  <div class="quotebox rise" style="--d:5800ms">
+    <p>富强、民主、文明、和谐是国家层面的价值目标……这 24 个字是社会主义核心价值观的基本内容。</p>
+    <div class="src">〔来源〕中共中央办公厅《关于培育和践行社会主义核心价值观的意见》，2013 年 12 月 23 日新华社播发全文</div>
+  </div>
+  <div class="foot rise" style="--d:6100ms">讲法：「文明」是国家层面的价值目标 —— 它不是「个人修养清单」，而是整个社会要达到的状态。</div>
+</section>
+
+<!-- ========== 页 05 · 是什么② 三层区分 ========== -->
+<section class="page" id="p05">
+  <div class="h-title rise" style="--d:150ms">一个「文明」，三层意思</div>
+  <div class="h-sub rise" style="--d:300ms">先把三层分开，后面才不打结。</div>
+  <div class="cols">
+    <svg class="rings" viewBox="0 0 664 664">
+      <circle cx="332" cy="332" r="322" fill="rgba(138,155,212,.10)" stroke="#8A9BD4" stroke-width="11" class="draw" pathLength="1" style="--d:500ms;--dur:1.1s" transform="rotate(-90 332 332)"/>
+      <circle cx="332" cy="332" r="214" fill="rgba(242,184,75,.14)" stroke="#F2B84B" stroke-width="9" class="draw" pathLength="1" style="--d:1300ms;--dur:.9s" transform="rotate(-90 332 332)"/>
+      <circle cx="332" cy="332" r="118" fill="rgba(226,114,91,.16)" stroke="#E2725B" stroke-width="10" class="draw" pathLength="1" style="--d:2000ms;--dur:.7s" transform="rotate(-90 332 332)"/>
+
+      <!-- 文字沿圆弧排布：基线弧半径按环带中线计算，textPath 让每个字的中线都过圆心 -->
+      <defs>
+        <path id="p05ArcOut" d="M 102.2 259.4 A 241 241 0 0 1 561.8 259.4" fill="none"/>
+        <path id="p05ArcMid" d="M 187.1 293.2 A 150 150 0 0 1 476.9 293.2" fill="none"/>
+      </defs>
+
+      <text class="rlabel rise" style="--d:1000ms" font-size="78" fill="#6B7FC0" textLength="610" lengthAdjust="spacing">
+        <textPath href="#p05ArcOut">广义的人类文明</textPath>
+      </text>
+
+      <text class="rlabel rise" style="--d:1750ms" font-size="48" fill="#8a7f4a" textLength="393" lengthAdjust="spacing">
+        <textPath href="#p05ArcMid">社会主义精神文明</textPath>
+      </text>
+
+      <text class="inlabel rise" x="332" y="318" text-anchor="middle" font-size="38" fill="#E2725B" style="--d:2450ms">核心价值观</text>
+      <text class="inlabel rise" x="332" y="360" text-anchor="middle" font-size="32" fill="#E2725B" style="--d:2560ms">里的「文明」</text>
+
+      <!-- 对齐辅助线（默认隐藏，?guides=1 显示）：两条文字基线弧 + 端点/中点径向线（均过圆心 332,332） -->
+      <g id="p05Guides" class="p05-guides" data-bleed="1">
+        <path d="M 102.2 259.4 A 241 241 0 0 1 561.8 259.4 M 187.1 293.2 A 150 150 0 0 1 476.9 293.2"/>
+        <path d="M 332 332 L 102.2 259.4 M 332 332 L 332 91 M 332 332 L 561.8 259.4 M 332 332 L 187.1 293.2 M 332 332 L 332 182 M 332 332 L 476.9 293.2"/>
+      </g>
+    </svg>
+    <div class="legend">
+      <div class="etym rise" style="--d:450ms">
+        <div class="ey">词源 · 不是舶来品</div>
+        <div class="eq">「见龙在田，天下文明」<span>《周易·乾卦·文言》</span></div>
+        <div class="eq">「观乎人文，以化成天下」<span>《周易·贲卦》</span></div>
+        <div class="en">「文明」「文化」两个词都出自这里 —— 这两个字，中国人讲了几千年。</div>
+      </div>
+      <div class="lrow" style="--d:600ms">
+        <div class="no" style="background:var(--lav)">①</div>
+        <div><h3>广义的人类文明</h3><p>与野蛮相对，人类改造世界的成果总和 —— 农耕文明、工业文明、数字文明、中华文明五千年。</p></div>
+      </div>
+      <div class="lrow" style="--d:1400ms">
+        <div class="no" style="background:var(--honey)">②</div>
+        <div><h3>社会主义精神文明</h3><p>与物质文明相对，精神生产与精神生活的成果 —— 1986 年中央决议的「两种文明」框架。</p></div>
+      </div>
+      <div class="lrow" style="--d:2100ms">
+        <div class="no" style="background:var(--coral)">③</div>
+        <div><h3>核心价值观里的「文明」</h3><p>国家层面的价值目标 + 社会进步状态 + 公民素养要求 ——「文明和谐」「文明素养」「文明出行」。</p></div>
+      </div>
+      <div class="oneline rise" style="--d:2700ms">广义文明是「人类走到哪一步」；核心价值观里的文明是<span class="coral" style="font-weight:800">「我们这个社会该是什么样子、我这个人该怎么做人」</span>。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页 06 · 是什么③ 结果×过程 ========== -->
+<section class="page" id="p06">
+  <div class="h-title rise" style="--d:150ms">文明，既是结果，也是过程</div>
+  <div class="cols">
+    <div class="midline grow-y" style="--d:600ms;--dur:.8s"></div>
+    <div class="col result">
+      <div class="klabel rise" style="--d:400ms">作为结果</div>
+      <div class="bigword rise" style="--d:600ms">社会文明程度<br><span class="coral">明显提升</span></div>
+      <p class="rise" style="--d:850ms">——社会文明程度明显提升。文化自信更加坚定，主流思想舆论不断巩固壮大，社会主义核心价值观广泛践行……国家软实力持续提高。</p>
+      <div class="src rise" style="--d:1050ms">〔来源〕《中共中央关于制定国民经济和社会发展第十五个五年规划的建议》，二十届四中全会 2025 年 10 月 23 日通过（「十五五」规划主要目标之一）</div>
+    </div>
+    <div class="col process">
+      <div class="klabel rise" style="--d:700ms">作为过程</div>
+      <div class="bigword rise" style="--d:900ms">统筹推进<br><span style="color:#4E8F76">城乡精神文明建设</span></div>
+      <p class="rise" style="--d:1150ms">统筹推进城乡精神文明建设，提升人民文明素养和社会文明程度。</p>
+      <div class="src rise" style="--d:1350ms">〔来源〕同上，第（33）条</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页 07 · 数据页：落差 ========== -->
+<section class="page" id="p07">
+  <div class="h-title rise" style="--d:120ms">在册的很多，真正动起来的明显少一截</div>
+  <div class="cols">
+    <div class="chart rise" style="--d:300ms">
+      <div class="plot">
+        <div class="barwrap">
+          <div class="bar b1 grow-y" style="--d:500ms;--dur:1.2s">
+            <div class="bnum"><span class="n"><span data-roll="2.09" data-dec="2" data-delay="900">0</span></span> <span class="u">亿人</span></div>
+          </div>
+          <div class="blabel">实名注册志愿者</div>
+        </div>
+        <div class="barwrap">
+          <div class="gap"></div>
+          <div class="bar b2 grow-y" style="--d:1100ms;--dur:.8s">
+            <div class="bnum"><span class="n"><span data-roll="4405" data-dec="0" data-delay="1400">0</span></span> <span class="u">万人</span></div>
+          </div>
+          <div class="blabel">其中：系统记录到<br>服务时间的人数</div>
+        </div>
+        <div class="gap-tag">差值约 1.65 亿人「在册未动」<small>差值为本次展示计算，非原报告口径</small></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="sidecard rise" style="--d:1900ms">
+        <h3><span class="dot"></span>时间对照：注册数还在涨</h3>
+        <div class="arrowline">
+          <div>2.09 亿<span class="yr">2021 年</span></div>
+          <div class="arr"><svg viewBox="0 0 200 20" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:2300ms;--dur:.7s" d="M4 10 H 178 M 168 3 L 180 10 L 168 17"/></svg></div>
+          <div>2.4 亿<span class="yr">2025 年 11 月</span></div>
+        </div>
+        <div class="src" style="margin-top:16px">〔来源〕《人民日报》2025 年 12 月 15 日第 05 版</div>
+      </div>
+      <div class="sidecard rise" style="--d:2200ms">
+        <h3><span class="dot"></span>为什么没动起来</h3>
+        <div class="rrow"><div class="rlab">没时间</div><div class="rbar"><i class="grow-x" style="--d:2500ms;--dur:.9s;width:100%"></i></div><div class="rval"><span data-roll="42.7" data-dec="1" data-suf="%" data-delay="2600">0</span></div></div>
+        <div class="rrow"><div class="rlab">合适活动少</div><div class="rbar"><i class="grow-x" style="--d:2700ms;--dur:.9s;width:78%"></i></div><div class="rval"><span data-roll="33.3" data-dec="1" data-suf="%" data-delay="2800">0</span></div></div>
+        <div class="rrow"><div class="rlab">不知道去哪儿报名</div><div class="rbar"><i class="grow-x" style="--d:2900ms;--dur:.9s;width:59.3%"></i></div><div class="rval"><span data-roll="25.3" data-dec="1" data-suf="%" data-delay="3000">0</span></div></div>
+        <div class="src" style="margin-top:16px">〔来源〕中国青年报社社会调查中心，2026-08-27，《中国青年报》08 版，n=1237</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">数据来源：民政部信息中心《全国志愿服务信息系统 助力志愿服务事业健康发展》，2021 年 10 月 9 日。差值为本展示计算，非原报告口径。</div>
+</section>
+<style>
+/* ================= 页 08 · 为什么① 国家 ================= */
+#p08 .tzone{position:relative;margin-top:70px}
+#p08 .tline{width:100%;height:14px;display:block}
+#p08 .tline path{stroke:var(--honey);stroke-width:5;stroke-linecap:round}
+#p08 .nodes{display:flex;justify-content:space-between;margin-top:-46px;padding:0 40px}
+#p08 .node{display:flex;flex-direction:column;align-items:center;gap:10px}
+#p08 .node .yr{font-size:64px;font-weight:800;color:var(--coral);letter-spacing:.02em}
+#p08 .node .nd{width:26px;height:26px;border-radius:50%;background:var(--coral);border:5px solid #fff;
+  box-shadow:0 0 0 3px var(--coral),0 8px 18px rgba(226,114,91,.35);order:2}
+#p08 .node .nd2{background:var(--mint);box-shadow:0 0 0 3px var(--mint),0 8px 18px rgba(127,191,165,.35)}
+#p08 .qcards{display:flex;gap:60px;margin-top:44px}
+#p08 .qcard{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:22px;padding:34px 40px;box-shadow:0 12px 30px rgba(46,42,36,.07)}
+#p08 .qcard .doc{font-size:19px;font-weight:800;color:var(--sub);margin-bottom:16px}
+#p08 .qcard p{font-family:var(--serif);font-size:21px;line-height:1.85}
+
+/* ================= 页 09 · 为什么② 社会 ================= */
+#p09 .laws{display:flex;gap:56px;margin-top:56px}
+#p09 .law{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:22px;padding:40px 44px;
+  box-shadow:0 12px 30px rgba(46,42,36,.07);position:relative;overflow:hidden}
+#p09 .law .book{position:absolute;right:-24px;top:-24px;width:120px;height:120px;opacity:.1}
+#p09 .law .no{display:inline-block;font-size:22px;font-weight:800;color:#fff;background:var(--lav);
+  border-radius:12px;padding:8px 20px;margin-bottom:22px}
+#p09 .law p{font-family:var(--serif);font-size:26px;line-height:2}
+#p09 .punch{margin-top:66px;font-size:38px;font-weight:800;line-height:1.6}
+#p09 .punch .big{font-size:46px}
+#p09 .scale{display:block;width:420px;height:298px;margin:18px auto 0}
+#p09 .scale path,#p09 .scale circle{fill:none;stroke:var(--cool);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+#p09 .scale .sway{transform-origin:190px 78px;animation:sway 7s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+
+/* ================= 页 10 · 为什么③ 个人 ================= */
+#p10 .cols{display:flex;gap:60px;margin-top:50px}
+#p10 .col{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:22px;padding:36px 40px;box-shadow:0 12px 30px rgba(46,42,36,.07)}
+#p10 .col h3{font-size:26px;font-weight:800;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#p10 .col h3 .sq{width:18px;height:18px;border-radius:6px;flex:none}
+#p10 .col .goal{font-size:19px;color:var(--sub);margin-bottom:24px}
+#p10 .items{display:flex;flex-wrap:wrap;gap:14px}
+#p10 .item{font-size:23px;font-weight:700;padding:12px 24px;border-radius:999px;border:1.5px solid #EAE2D0;background:var(--bg);
+  opacity:0;transform:translateY(14px) scale(.9);transition:opacity .5s var(--ease),transform .5s cubic-bezier(.34,1.45,.64,1);transition-delay:var(--d,0ms)}
+#p10.is-active .item{opacity:1;transform:none}
+#p10 .quotebox{margin-top:40px;background:var(--bg2);border-radius:18px;padding:26px 36px}
+#p10 .quotebox p{font-family:var(--serif);font-size:19px;line-height:1.8}
+#p10 .quotebox .src{margin-top:10px}
+
+/* ================= 页 11 · 为什么④ 反证 ================= */
+#p11 .regs{display:flex;gap:60px;margin-top:56px}
+#p11 .reg{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:22px;padding:42px 46px;
+  box-shadow:0 12px 30px rgba(46,42,36,.07);position:relative}
+#p11 .reg .lawname{font-size:24px;font-weight:800;margin-bottom:6px}
+#p11 .reg .issuer{font-size:17px;color:var(--sub);margin-bottom:22px}
+#p11 .reg p{font-family:var(--serif);font-size:22px;line-height:1.95}
+#p11 .stamp{position:absolute;right:34px;top:30px;width:118px;height:118px;transform:rotate(12deg)}
+#p11 .stamp circle{fill:none;stroke:var(--coral);stroke-width:4}
+#p11 .stamp text{font-size:25px;font-weight:800;fill:var(--coral);letter-spacing:2px}
+#p11 .stamp .d{font-size:15px;font-weight:700}
+
+/* ================= 页 12 · 历史① 先秦 ================= */
+#p12 .cols{display:flex;gap:90px;margin-top:40px;height:660px}
+#p12 .left{flex:1;display:flex;flex-direction:column}
+#p12 .funcs{display:flex;gap:20px;margin:34px 0 40px}
+#p12 .func{flex:1;text-align:center;padding:26px 10px;border-radius:18px;font-size:28px;font-weight:800;
+  border:2px solid;background:#fff}
+#p12 .func small{display:block;font-size:16px;font-weight:700;color:var(--sub);margin-top:8px}
+#p12 .mini{font-family:var(--serif);font-size:21px;line-height:2;color:var(--ink)}
+#p12 .mini .src{font-size:15px}
+#p12 .vquotes{flex:none;display:flex;flex-direction:row-reverse;gap:56px}
+#p12 .vq{writing-mode:vertical-rl;font-family:var(--serif);font-size:58px;font-weight:700;letter-spacing:.18em;
+  height:600px;padding:26px 20px;background:#fff;border:1.5px solid #EDE6D6;border-radius:20px;
+  box-shadow:0 12px 30px rgba(46,42,36,.07);position:relative}
+#p12 .vq .vsrc{position:absolute;left:14px;bottom:20px;writing-mode:vertical-rl;font-size:16px;color:var(--sub);letter-spacing:.1em}
+
+/* ================= 页 13 · 历史② 辨析 ================= */
+#p13 .versus{display:flex;gap:0;margin-top:50px;position:relative;align-items:stretch}
+#p13 .side{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:22px;padding:38px 44px;box-shadow:0 12px 30px rgba(46,42,36,.07)}
+#p13 .side h3{font-size:25px;font-weight:800;margin-bottom:6px}
+#p13 .side .tagline{font-size:18px;color:var(--sub);margin-bottom:22px}
+#p13 .side p{font-family:var(--serif);font-size:25px;line-height:1.9;margin-bottom:14px}
+#p13 .side .src{font-size:15px}
+#p13 .crack{width:130px;flex:none;display:flex;align-items:center;justify-content:center}
+#p13 .crack svg{height:380px;width:70px}
+#p13 .crack path{stroke:var(--coral);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+#p13 .chain{margin-top:44px;display:flex;align-items:center;gap:0}
+#p13 .link{flex:1;background:var(--bg2);border-radius:16px;padding:18px 24px;font-size:19px;font-weight:700;line-height:1.6;text-align:center}
+#p13 .link b{font-weight:800}
+#p13 .linkarr{width:56px;flex:none;height:20px;position:relative}
+#p13 .linkarr svg{position:absolute;inset:0;width:100%;height:100%}
+#p13 .linkarr path{stroke:#B9AE95;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ================= 页 14 · 历史③ 礼→礼教 ================= */
+#p14 .tl{position:relative;margin-top:120px}
+#p14 .tlline{width:100%;height:14px;display:block}
+#p14 .tlline path{stroke:var(--lav);stroke-width:5;stroke-linecap:round}
+#p14 .tnodes{display:flex;justify-content:space-between;margin-top:-50px;padding:0 90px}
+#p14 .tnode{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+#p14 .tnode .era{font-family:var(--serif);font-size:64px;font-weight:800;margin-bottom:16px}
+#p14 .tnode .nd{width:24px;height:24px;border-radius:50%;border:5px solid #fff;margin-bottom:26px}
+#p14 .tnode:nth-child(1) .nd{background:var(--mint);box-shadow:0 0 0 3px var(--mint)}
+#p14 .tnode:nth-child(2) .nd{background:var(--honey);box-shadow:0 0 0 3px var(--honey)}
+#p14 .tnode:nth-child(3) .nd{background:var(--coral);box-shadow:0 0 0 3px var(--coral)}
+#p14 .tnode .note{background:#fff;border:1.5px solid #EDE6D6;border-radius:18px;padding:22px 26px;
+  font-size:20px;line-height:1.7;font-weight:600;max-width:400px;box-shadow:0 10px 26px rgba(46,42,36,.07)}
+#p14 .tnode .note b{font-weight:800}
+</style>
+
+<!-- ========== 页 08 · 为什么① 国家 ========== -->
+<section class="page" id="p08">
+  <svg class="doodle f-a" style="right:120px;top:70px" width="110" height="30" viewBox="0 0 130 34"><path d="M6 22 C 26 4, 44 32, 66 16 S 104 4, 124 20" fill="none" stroke="#8A9BD4" stroke-width="6" stroke-linecap="round"/></svg>
+  <div class="h-title rise" style="--d:150ms">文明程度，是国家软实力的一部分</div>
+  <div class="h-sub rise" style="--d:320ms">它被写进了国家五年规划的主要目标 —— 从 1986 到 2025，这条线一直在。</div>
+  <div class="tzone">
+    <svg class="tline" viewBox="0 0 1700 14" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:600ms;--dur:1.2s" d="M8 7 H 1692"/></svg>
+    <div class="nodes">
+      <div class="node"><div class="yr pop" style="--d:800ms">1986</div><div class="nd pop" style="--d:900ms"></div></div>
+      <div class="node"><div class="yr pop" style="--d:1800ms;color:#4E8F76">2025</div><div class="nd nd2 pop" style="--d:1900ms"></div></div>
+    </div>
+    <div class="qcards">
+      <div class="qcard rise" style="--d:1100ms">
+        <div class="doc">《中共中央关于社会主义精神文明建设指导方针的决议》 · 十二届六中全会 1986 年 9 月 28 日通过</div>
+        <p>这个复兴，不但将创造出高度发达的物质文明，而且将创造出以马克思主义为指导的，批判继承历史传统而又充分体现时代精神的，立足本国而又面向世界的，这样一种高度发达的社会主义精神文明。</p>
+      </div>
+      <div class="qcard rise" style="--d:2000ms">
+        <div class="doc">「十五五」规划建议 · 二十届四中全会 2025 年 10 月 23 日通过</div>
+        <p>——<span class="coral" style="font-weight:800">社会文明程度明显提升</span>。文化自信更加坚定，主流思想舆论不断巩固壮大，社会主义核心价值观广泛践行……国家软实力持续提高。</p>
+      </div>
+    </div>
+    <div class="milestones">
+      <div class="mslabel rise" style="--d:2600ms">中间的 39 年不是空白 —— 一路都有文件接着</div>
+      <div class="msrail">
+        <svg class="msarrow" viewBox="0 0 1700 14" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:2800ms;--dur:1s" d="M1692 7 H 10 M 34 1 L 8 7 L 34 13"/></svg>
+        <div class="msnodes">
+          <div class="mnode rise" style="--d:3000ms"><b>1996</b><span>十四届六中全会《关于加强社会主义精神文明建设若干重要问题的决议》</span></div>
+          <div class="mnode rise" style="--d:3120ms"><b>2001</b><span>《公民道德建设实施纲要》</span></div>
+          <div class="mnode rise" style="--d:3240ms"><b>2012</b><span>十八大凝练「24 字」</span></div>
+          <div class="mnode rise" style="--d:3360ms"><b>2013</b><span>中办《关于培育和践行社会主义核心价值观的意见》</span></div>
+          <div class="mnode rise" style="--d:3480ms"><b>2019</b><span>《新时代公民道德建设实施纲要》</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页 09 · 为什么② 社会 ========== -->
+<section class="page" id="p09">
+  <svg class="doodle f-b" style="right:130px;top:90px" width="46" height="46" viewBox="0 0 52 52"><circle cx="26" cy="26" r="17" fill="none" stroke="#F2B84B" stroke-width="6"/></svg>
+  <div class="h-title rise" style="--d:150ms">文明是社会协作的<span class="coral">基础设施</span></div>
+  <div class="h-sub rise" style="--d:320ms">排队、诚信、不打扰他人，降低的是所有人的交易成本 —— 不是道德说教，是效率。</div>
+  <div class="laws">
+    <div class="law rise" style="--d:600ms">
+      <div class="no">第八条</div>
+      <p>民事主体从事民事活动，不得违反法律，不得违背<span class="mark" style="font-weight:800">公序良俗</span>。</p>
+    </div>
+    <div class="law rise" style="--d:900ms">
+      <div class="no">第十条</div>
+      <p>处理民事纠纷，应当依照法律；法律没有规定的，可以适用习惯，但是不得违背<span class="mark" style="font-weight:800">公序良俗</span>。</p>
+    </div>
+  </div>
+  <div class="punch rise" style="--d:1400ms">「公序良俗」四个字进了法典 —— 说明它不是「提倡」，是<span class="wavy coral"><span class="big">底线</span><svg class="wave" viewBox="0 0 200 12" preserveAspectRatio="none"><path pathLength="1" style="--d:1800ms" d="M2 8 C 14 2, 26 12, 40 7 S 66 2, 80 7 S 106 12, 120 7 S 146 2, 160 7 S 186 12, 198 7"/></svg></span>。</div>
+  <svg class="scale" viewBox="0 0 380 270" aria-label="天平">
+    <!-- 底座三层台阶，从下往上 -->
+    <path class="draw" pathLength="1" style="--d:2000ms;--dur:.45s" d="M 118 252 Q 190 242 262 252"/>
+    <path class="draw" pathLength="1" style="--d:2300ms;--dur:.4s" d="M 136 242 Q 190 233 244 242"/>
+    <path class="draw" pathLength="1" style="--d:2600ms;--dur:.4s" d="M 154 232 Q 190 224 226 232"/>
+    <!-- 双线收分立柱 + 柱环 + 顶尖 -->
+    <path class="draw" pathLength="1" style="--d:2950ms;--dur:.5s" d="M 181 230 L 185 84"/>
+    <path class="draw" pathLength="1" style="--d:3200ms;--dur:.5s" d="M 199 230 L 195 84"/>
+    <path class="draw" pathLength="1" style="--d:3500ms;--dur:.35s" d="M 179 106 Q 190 112 201 106"/>
+    <path class="draw" pathLength="1" style="--d:3750ms;--dur:.3s" d="M 190 84 L 190 66"/>
+    <circle class="draw" pathLength="1" style="--d:4000ms;--dur:.4s" cx="190" cy="57" r="9"/>
+    <!-- 晃动部分：横梁 + 卷草 + 指针 + 双盘三链 -->
+    <g class="sway">
+      <path class="draw" pathLength="1" style="--d:4300ms;--dur:.6s" d="M 66 92 Q 190 74 314 92"/>
+      <path class="draw" pathLength="1" style="--d:4850ms;--dur:.3s" d="M 66 92 Q 60 82 68 76"/>
+      <path class="draw" pathLength="1" style="--d:5050ms;--dur:.3s" d="M 314 92 Q 320 82 312 76"/>
+      <path class="draw" pathLength="1" style="--d:5250ms;--dur:.3s" d="M 190 82 L 190 110"/>
+      <path class="draw" pathLength="1" style="--d:5500ms;--dur:.25s" d="M 182 116 Q 190 120 198 116"/>
+      <path class="draw" pathLength="1" style="--d:5700ms;--dur:.4s" d="M 66 92 L 28 158"/>
+      <path class="draw" pathLength="1" style="--d:5800ms;--dur:.4s" d="M 66 92 L 66 158"/>
+      <path class="draw" pathLength="1" style="--d:5900ms;--dur:.4s" d="M 66 92 L 104 158"/>
+      <path class="draw" pathLength="1" style="--d:6200ms;--dur:.35s" d="M 28 158 Q 66 150 104 158"/>
+      <path class="draw" pathLength="1" style="--d:6450ms;--dur:.45s" d="M 28 158 Q 66 210 104 158"/>
+      <path class="draw" pathLength="1" style="--d:6700ms;--dur:.4s" d="M 314 92 L 276 158"/>
+      <path class="draw" pathLength="1" style="--d:6800ms;--dur:.4s" d="M 314 92 L 314 158"/>
+      <path class="draw" pathLength="1" style="--d:6900ms;--dur:.4s" d="M 314 92 L 352 158"/>
+      <path class="draw" pathLength="1" style="--d:7200ms;--dur:.35s" d="M 276 158 Q 314 150 352 158"/>
+      <path class="draw" pathLength="1" style="--d:7450ms;--dur:.45s" d="M 276 158 Q 314 210 352 158"/>
+    </g>
+  </svg>
+  <div class="foot">〔来源〕《中华人民共和国民法典》，2021 年 1 月 1 日施行。</div>
+</section>
+
+<!-- ========== 页 10 · 为什么③ 个人 ========== -->
+<section class="page" id="p10">
+  <div class="h-title rise" style="--d:150ms">文明是个人名片，也是自我成全</div>
+  <div class="h-sub rise" style="--d:320ms">它对他人，也对自己。</div>
+  <div class="cols">
+    <div class="col rise" style="--d:500ms">
+      <h3><span class="sq" style="background:var(--mint)"></span>社会公德 · 五项</h3>
+      <div class="goal">鼓励人们在社会上做一个好公民</div>
+      <div class="items">
+        <span class="item" style="--d:700ms">文明礼貌</span><span class="item" style="--d:800ms">助人为乐</span><span class="item" style="--d:900ms">爱护公物</span><span class="item" style="--d:1000ms">保护环境</span><span class="item" style="--d:1100ms">遵纪守法</span>
+      </div>
+    </div>
+    <div class="col rise" style="--d:650ms">
+      <h3><span class="sq" style="background:var(--honey)"></span>个人品德 · 五项</h3>
+      <div class="goal">鼓励人们在日常生活中养成好品行</div>
+      <div class="items">
+        <span class="item" style="--d:850ms">爱国奉献</span><span class="item" style="--d:950ms">明礼遵规</span><span class="item" style="--d:1050ms">勤劳善良</span><span class="item" style="--d:1150ms">宽厚正直</span><span class="item" style="--d:1250ms">自强自律</span>
+      </div>
+    </div>
+  </div>
+  <div class="liang rise" style="--d:1600ms">
+    <div class="lq">「我国民所最缺者，公德其一端也。」</div>
+    <div class="lsrc">—— 梁启超《新民说》，1902 年</div>
+    <div class="lread">中国人向来讲<b>私德</b>（对熟人），缺<b>公德</b>（对陌生人）。<span class="coral">120 多年后补的还是这一课</span> —— 这就是「文明」进核心价值观的原因。</div>
+  </div>
+  <div class="quotebox rise" style="--d:1450ms">
+    <p>推动践行以文明礼貌、助人为乐、爱护公物、保护环境、遵纪守法为主要内容的社会公德，鼓励人们在社会上做一个好公民；……推动践行以爱国奉献、明礼遵规、勤劳善良、宽厚正直、自强自律为主要内容的个人品德，鼓励人们在日常生活中养成好品行。</p>
+    <div class="src">〔来源〕《新时代公民道德建设实施纲要》，中共中央、国务院印发，2019 年 10 月</div>
+  </div>
+</section>
+
+<!-- ========== 页 11 · 为什么④ 反证 ========== -->
+<section class="page" id="p11">
+  <svg class="doodle f-d" style="right:150px;top:70px" width="90" height="26" viewBox="0 0 90 26"><circle cx="13" cy="13" r="7" fill="#E2725B"/><circle cx="45" cy="13" r="7" fill="#F2B84B"/><circle cx="77" cy="13" r="7" fill="#7FBFA5"/></svg>
+  <div class="h-title rise" style="--d:150ms">当不文明越界，制度会出手</div>
+  <div class="h-sub rise" style="--d:320ms">文明不只是倡导 —— 这两部新规，都是近几年的事。</div>
+  <div class="regs">
+    <div class="reg rise" style="--d:600ms">
+      <svg class="stamp pop" style="--d:1300ms" viewBox="0 0 118 118"><circle cx="59" cy="59" r="54"/><text x="59" y="56" text-anchor="middle">已施行</text><text class="d" x="59" y="82" text-anchor="middle">2024.8.1</text></svg>
+      <div class="lawname">《网络暴力信息治理规定》</div>
+      <div class="issuer">国家网信办等四部门令第 17 号</div>
+      <p><b>第六条</b>　网络信息服务提供者和用户应当坚持社会主义核心价值观，遵守法律法规，尊重社会公德和伦理道德，促进形成积极健康、向上向善的网络文化，维护良好网络生态。</p>
+    </div>
+    <div class="reg rise" style="--d:850ms">
+      <svg class="stamp pop" style="--d:1550ms" viewBox="0 0 118 118"><circle cx="59" cy="59" r="54"/><text x="59" y="56" text-anchor="middle">已施行</text><text class="d" x="59" y="82" text-anchor="middle">2025.9.1</text></svg>
+      <div class="lawname">《人工智能生成合成内容标识办法》</div>
+      <div class="issuer">国家网信办等四部门</div>
+      <p>任何组织和个人不得恶意删除、篡改、伪造、隐匿本办法规定的生成合成内容标识。</p>
+    </div>
+  </div>
+  <div class="case rise" style="--d:2100ms">
+    <div class="ctag">一个判例</div>
+    <p>2020 年，杭州女子取快递被造谣出轨。原本只能<b>自诉</b>（自己告），检察机关介入后转为<b>公诉</b>，造谣者被判刑。</p>
+    <div class="cnote">网络不是法外之地 —— <b>文明的底线由法律兜住</b>：法律是最低的道德。</div>
+  </div>
+  <div class="foot">〔来源〕《网络暴力信息治理规定》，2024 年 8 月 1 日施行；《人工智能生成合成内容标识办法》，2025 年 9 月 1 日施行。</div>
+</section>
+
+<!-- ========== 页 12 · 历史① 先秦 ========== -->
+<section class="page" id="p12">
+  <div class="h-title rise" style="--d:150ms">先秦：礼是「操作系统」</div>
+  <div class="cols">
+    <div class="left">
+      <div class="h-sub rise" style="--d:320ms;margin-top:10px">它不只是礼貌，是整套社会规则 —— 承担三重功能：</div>
+      <div class="funcs">
+        <div class="func pop" style="--d:600ms;border-color:var(--mint);color:#4E8F76">秩序<small>社会怎么运转</small></div>
+        <div class="func pop" style="--d:750ms;border-color:var(--honey);color:#C08A1E">教化<small>人怎么被养成</small></div>
+        <div class="func pop" style="--d:900ms;border-color:var(--lav);color:#6B7FC0">身份识别<small>各安其位</small></div>
+      </div>
+      <div class="mini rise" style="--d:1200ms">
+        <p>人无礼则不生，事无礼则不成，国家无礼则不宁。<span class="src">〔《荀子·修身》〕</span></p>
+        <p style="margin-top:14px">礼者，天地之序也。<span class="src">〔《礼记·乐记》〕</span></p>
+      </div>
+    </div>
+    <div class="vquotes">
+      <div class="vq rise" style="--d:500ms"><span data-chars="110" style="--base:800ms">克己复礼为仁</span><span class="vsrc">《论语·颜渊》</span></div>
+      <div class="vq rise" style="--d:750ms"><span data-chars="110" style="--base:1300ms">不学礼，无以立</span><span class="vsrc">《论语·季氏》</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页 13 · 历史② 辨析 ========== -->
+<section class="page" id="p13">
+  <div class="h-title rise" style="--d:150ms">辨析：先秦儒学 <span class="coral">≠</span> 三纲五常</div>
+  <div class="h-sub rise" style="--d:320ms">孔子讲的是双向对等，三纲是后世的加固。</div>
+  <div class="versus">
+    <div class="side rise" style="--d:500ms">
+      <h3 style="color:#4E8F76">先秦原话</h3>
+      <div class="tagline">关键词：双向对等</div>
+      <p>君君、臣臣、父父、子子。<span class="src">〔《论语·颜渊》〕</span></p>
+      <p>君之视臣如土芥，则臣视君如寇仇。<span class="src">〔《孟子·离娄下》〕</span></p>
+    </div>
+    <div class="crack">
+      <svg viewBox="0 0 70 380"><path class="draw" pathLength="1" style="--d:1100ms;--dur:.7s" d="M40 4 L22 70 L48 130 L20 200 L46 260 L24 330 L38 376"/></svg>
+    </div>
+    <div class="side rise" style="--d:700ms">
+      <h3 style="color:var(--coral)">后世定式</h3>
+      <div class="tagline">关键词：单向服从</div>
+      <p>君为臣纲、父为子纲、夫为妻纲。<span class="src">〔东汉《白虎通义》确立〕</span></p>
+      <p style="font-size:20px;color:var(--sub);font-family:var(--sans)">「三纲」的绝对化定型，是汉代以后的事。</p>
+    </div>
+  </div>
+  <div class="chain rise" style="--d:1500ms">
+    <div class="link">汉 · 董仲舒《春秋繁露》<br><b>提出纲常框架</b></div>
+    <div class="linkarr"><svg viewBox="0 0 56 20" preserveAspectRatio="none"><path d="M4 10 H 42 M 34 3 L 44 10 L 34 17"/></svg></div>
+    <div class="link">东汉《白虎通义》<br><b>确立「三纲」</b></div>
+    <div class="linkarr"><svg viewBox="0 0 56 20" preserveAspectRatio="none"><path d="M4 10 H 42 M 34 3 L 44 10 L 34 17"/></svg></div>
+    <div class="link">宋代理学<br><b>进一步强化</b></div>
+  </div>
+</section>
+
+<!-- ========== 页 14 · 历史③ 礼→礼教 ========== -->
+<section class="page" id="p14">
+  <svg class="doodle f-c" style="right:110px;top:80px" width="44" height="44" viewBox="0 0 44 44"><path d="M22 6v32M6 22h32" stroke="#F2B84B" stroke-width="7" stroke-linecap="round"/></svg>
+  <div class="h-title rise" style="--d:150ms">从「礼」到「礼教」</div>
+  <div class="h-sub rise" style="--d:320ms">等级秩序不是孔子的发明，是后世的制度化。</div>
+  <div class="tl">
+    <svg class="tlline" viewBox="0 0 1700 14" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:600ms;--dur:1.4s" d="M8 7 H 1692"/></svg>
+    <div class="tnodes">
+      <div class="tnode">
+        <div class="era pop" style="--d:700ms;color:#4E8F76">先秦</div>
+        <div class="nd pop" style="--d:800ms"></div>
+        <div class="note rise" style="--d:1000ms">孔子讲「君君、臣臣」—— 是<b>各尽其分</b>的双向要求。</div>
+      </div>
+      <div class="tnode">
+        <div class="era pop" style="--d:1300ms;color:#C08A1E">汉</div>
+        <div class="nd pop" style="--d:1400ms"></div>
+        <div class="note rise" style="--d:1600ms">董仲舒《春秋繁露》提出纲常框架；《白虎通义》确立<b>「三纲」</b>。</div>
+      </div>
+      <div class="tnode">
+        <div class="era pop" style="--d:1900ms;color:var(--coral)">宋</div>
+        <div class="nd pop" style="--d:2000ms"></div>
+        <div class="note rise" style="--d:2200ms">理学进一步强化 —— 活的社会规则，硬化为<b>「礼教」</b>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+/* ================= 页 15 · 历史④ 近代的破 ================= */
+#p15{background:var(--bg2)}
+#p15 .paper{max-width:1380px;margin:48px auto 0;background:#FFFDF7;border:1.5px solid #E7DEC8;border-radius:26px;
+  padding:64px 76px;box-shadow:0 16px 44px rgba(46,42,36,.09);position:relative}
+#p15 .paper .lx{font-family:var(--serif);font-size:33px;line-height:2.05}
+#p15 .paper .lx .l2{padding-left:2em}
+#p15 .chiren{font-size:52px;font-weight:800;color:var(--coral);padding:0 6px}
+#p15 .sign{position:absolute;right:60px;bottom:40px;font-family:var(--serif);font-size:21px;color:var(--sub)}
+#p15 .takeaway{max-width:1380px;margin:46px auto 0;font-size:27px;font-weight:700;line-height:1.7;text-align:center}
+
+/* ================= 页 16 · 历史⑤ 从破到立 ================= */
+#p16 .cols{display:flex;gap:60px;margin-top:44px}
+#p16 .left{flex:1.15;display:flex;flex-direction:column;gap:26px}
+#p16 .fact{background:#fff;border:1.5px solid #EDE6D6;border-radius:20px;padding:28px 34px;box-shadow:0 10px 26px rgba(46,42,36,.07)}
+#p16 .fact .yrline{display:flex;align-items:center;gap:18px;font-size:21px;font-weight:800}
+#p16 .fact .yrline .y{font-size:30px;color:var(--coral)}
+#p16 .fact .yrline .arr{flex:1;height:18px;position:relative}
+#p16 .fact .yrline .arr svg{position:absolute;inset:0;width:100%;height:100%}
+#p16 .fact .yrline .arr path{stroke:var(--honey);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p16 .fact p{margin-top:14px;font-size:19px;line-height:1.75;color:var(--ink)}
+#p16 .fact .small{font-size:15px;color:var(--sub)}
+#p16 .quotebox{background:var(--bg2);border-radius:18px;padding:26px 34px}
+#p16 .quotebox p{font-family:var(--serif);font-size:21px;line-height:1.85}
+#p16 .quotebox .src{margin-top:10px}
+#p16 .right{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-content:start}
+#p16 .prin{background:#fff;border:1.5px solid #EDE6D6;border-radius:20px;padding:30px 28px;box-shadow:0 10px 26px rgba(46,42,36,.07);
+  opacity:0;transform:translateY(20px) scale(.94);transition:opacity .55s var(--ease),transform .55s cubic-bezier(.34,1.4,.64,1);transition-delay:var(--d,0ms)}
+#p16.is-active .prin{opacity:1;transform:none}
+#p16 .prin h4{font-size:25px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+#p16 .prin h4 .dot{width:13px;height:13px;border-radius:50%;flex:none}
+#p16 .prin p{font-size:17px;color:var(--sub);line-height:1.65}
+
+/* ================= 页 17 · 历史⑥ 当代的立 ================= */
+#p17 .tl{position:relative;margin-top:56px}
+#p17 .tlline{width:100%;height:12px;display:block}
+#p17 .tlline path{stroke:var(--mint);stroke-width:5;stroke-linecap:round}
+#p17 .tnodes{display:flex;margin-top:-44px;gap:18px}
+#p17 .tnode{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+#p17 .tnode .yr{font-size:34px;font-weight:800;color:var(--ink);letter-spacing:.01em;margin-bottom:12px}
+#p17 .tnode .nd{width:20px;height:20px;border-radius:50%;background:var(--coral);border:4px solid #fff;
+  box-shadow:0 0 0 3px var(--coral);margin-bottom:20px}
+#p17 .tnode:nth-child(2) .nd{background:var(--honey);box-shadow:0 0 0 3px var(--honey)}
+#p17 .tnode:nth-child(3) .nd{background:var(--mint);box-shadow:0 0 0 3px var(--mint)}
+#p17 .tnode:nth-child(4) .nd{background:var(--lav);box-shadow:0 0 0 3px var(--lav)}
+#p17 .tnode:nth-child(5) .nd{background:var(--cool);box-shadow:0 0 0 3px var(--cool)}
+#p17 .tnode:nth-child(6) .nd{background:var(--coral);box-shadow:0 0 0 3px var(--coral)}
+#p17 .tnode .ev{background:#fff;border:1.5px solid #EDE6D6;border-radius:16px;padding:18px 16px;
+  box-shadow:0 8px 20px rgba(46,42,36,.06);width:100%}
+#p17 .tnode .ev b{display:block;font-size:18px;font-weight:800;line-height:1.45;margin-bottom:8px}
+#p17 .tnode .ev span{font-size:15.5px;color:var(--sub);line-height:1.6;display:block}
+#p17 .golden{margin-top:42px;background:var(--bg2);border-radius:18px;padding:24px 38px;display:flex;gap:22px;align-items:center}
+#p17 .golden .qmark{font-family:var(--serif);font-size:60px;color:var(--honey);line-height:1;flex:none}
+#p17 .golden p{font-family:var(--serif);font-size:21px;line-height:1.8}
+#p17 .golden .src{margin-top:6px}
+
+/* ================= 页 18 · 升华① 三行大字 ================= */
+#p18{background:var(--bg3)}
+#p18 .askwrap{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:64px}
+#p18 .aline{font-size:52px;font-weight:700;line-height:1.5}
+#p18 .aline.l3{font-size:68px;font-weight:800}
+#p18 .qmark-doodle{position:absolute;right:180px;top:120px;opacity:.5}
+</style>
+
+<!-- ========== 页 15 · 历史④ 近代的破 ========== -->
+<section class="page" id="p15">
+  <div class="h-title rise" style="--d:150ms">近代的破：礼教吃人</div>
+  <div class="paper rise" style="--d:400ms">
+    <div class="lx">
+      <div class="rise" style="--d:800ms">我翻开历史一查，这历史没有年代，</div>
+      <div class="rise" style="--d:1200ms">歪歪斜斜的每页上都写着「仁义道德」几个字。</div>
+      <div class="l2 rise" style="--d:1650ms">我横竖睡不着，仔细看了半夜，才从字缝里看出字来，</div>
+      <div class="l2 rise" style="--d:2100ms">满本都写着两个字是<span class="chiren pop" style="--d:2600ms">「吃人」</span>！</div>
+    </div>
+    <div class="sign rise" style="--d:2900ms">—— 鲁迅《狂人日记》，1918 年</div>
+  </div>
+  <div class="takeaway rise" style="--d:3100ms">五四要破的是<span class="coral" style="font-weight:800">把人不当人的那套关系</span>，不是把文化整体扔掉。</div>
+  <div class="scholar rise" style="--d:3400ms">
+    <div><span class="tag">学术出处</span>「礼教吃人」作为一个命题，系统提出者是<b>吴虞</b> —— 1919 年《新青年》上的《吃人与礼教》；鲁迅《狂人日记》是它的文学表达。</div>
+    <div><span class="tag">一句平衡</span>破的是<b>被异化的「礼教」</b>，不是<b>「礼」本身</b> —— 这是第 20 页「内核不变」的伏笔。</div>
+  </div>
+</section>
+
+<!-- ========== 页 16 · 历史⑤ 从破到立 ========== -->
+<section class="page" id="p16">
+  <div class="h-title rise" style="--d:150ms">从破到立：根据地就开始改</div>
+  <div class="h-sub rise" style="--d:320ms">这是用法律重新安排社会关系的最早尝试。</div>
+  <div class="cols">
+    <div class="left">
+      <div class="fact rise" style="--d:500ms">
+        <div class="yrline">
+          <span><span class="y">1931.12</span> 《婚姻条例》</span>
+          <span class="arr"><svg viewBox="0 0 200 18" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:900ms;--dur:.7s" d="M4 9 H 176 M 166 2 L 178 9 L 166 16"/></svg></span>
+          <span><span class="y">1934.4.8</span> 《婚姻法》</span>
+        </div>
+        <p>1934 年《中华苏维埃共和国婚姻法》：中央执行委员会命令<b>中字第七号</b>，主席毛泽东署名，原载《红色中华》1934-04-26。<span class="small">（1931 年 12 月颁布的《婚姻条例》为其前身，1934 年 4 月 8 日被取代。）</span></p>
+      </div>
+      <div class="quotebox rise" style="--d:1200ms">
+        <p>因为数千年来，婚姻关系野蛮得无人性，女人所受的压迫比男子更甚，所以现时苏维埃的婚姻法令着重于保护女子。</p>
+        <div class="src">〔来源〕毛泽东 1934 年 1 月在第二次全国苏维埃代表大会上的报告</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="prin" style="--d:800ms"><h4><span class="dot" style="background:var(--coral)"></span>婚姻自由</h4><p>禁止包办强迫买卖婚姻、禁止童养媳、登记领证、废除聘金聘礼嫁妆</p></div>
+      <div class="prin" style="--d:950ms"><h4><span class="dot" style="background:var(--honey)"></span>一夫一妻</h4><p>以一夫一妻为婚姻的基本形式</p></div>
+      <div class="prin" style="--d:1100ms"><h4><span class="dot" style="background:var(--mint)"></span>男女平等</h4><p>男女双方在婚姻与家庭中地位平等</p></div>
+      <div class="prin" style="--d:1250ms"><h4><span class="dot" style="background:var(--lav)"></span>保护妇女儿童</h4><p>着重保护女子与儿童的权益</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页 17 · 历史⑥ 当代的立 ========== -->
+<section class="page" id="p17">
+  <div class="h-title rise" style="--d:150ms">当代的立：一步一步建成</div>
+  <div class="tl">
+    <svg class="tlline" viewBox="0 0 1700 12" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:500ms;--dur:1.6s" d="M8 6 H 1692"/></svg>
+    <div class="tnodes">
+      <div class="tnode">
+        <div class="yr"><span data-sep="0" data-roll="1950" data-delay="600" data-dur="700">0</span></div>
+        <div class="nd pop" style="--d:700ms"></div>
+        <div class="ev rise" style="--d:850ms"><b>《婚姻法》施行</b><span>第一条直接废除包办强迫、男尊女卑的封建主义婚姻制度</span></div>
+      </div>
+      <div class="tnode">
+        <div class="yr"><span data-sep="0" data-roll="1952" data-delay="800" data-dur="700">0</span></div>
+        <div class="nd pop" style="--d:900ms"></div>
+        <div class="ev rise" style="--d:1050ms"><b>爱国卫生运动</b><span>靠群众运动 + 组织体系养成卫生习惯</span></div>
+      </div>
+      <div class="tnode">
+        <div class="yr"><span data-sep="0" data-roll="1963" data-delay="1000" data-dur="700">0</span></div>
+        <div class="nd pop" style="--d:1100ms"></div>
+        <div class="ev rise" style="--d:1250ms"><b>「向雷锋同志学习」题词见报</b><span>志愿精神的历史源头</span></div>
+      </div>
+      <div class="tnode">
+        <div class="yr"><span data-sep="0" data-roll="1981" data-delay="1200" data-dur="700">0</span></div>
+        <div class="nd pop" style="--d:1300ms"></div>
+        <div class="ev rise" style="--d:1450ms"><b>五讲四美三热爱</b><span>群众性精神文明创建成型（1983 年中央成立委员会）</span></div>
+      </div>
+      <div class="tnode">
+        <div class="yr"><span data-sep="0" data-roll="1986" data-delay="1400" data-dur="700">0</span></div>
+        <div class="nd pop" style="--d:1500ms"></div>
+        <div class="ev rise" style="--d:1650ms"><b>精神文明决议</b><span>移风易俗写进党的决议</span></div>
+      </div>
+      <div class="tnode">
+        <div class="yr"><span data-sep="0" data-roll="2001" data-delay="1600" data-dur="700">0</span></div>
+        <div class="nd pop" style="--d:1700ms"></div>
+        <div class="ev rise" style="--d:1850ms"><b>两部《公民道德建设纲要》</b><span>2001 / 2019，「明大德、守公德、严私德」</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="golden rise" style="--d:2100ms">
+    <div class="qmark">「</div>
+    <div>
+      <p>婚嫁丧葬中的陋习要改革，封建迷信要破除。这种改革，要在尊重健康民俗的前提下，在自愿基础上，由群众自己来进行。</p>
+      <div class="src">〔来源〕1986 年 9 月 28 日十二届六中全会决议</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页 18 · 升华① 三行大字 ========== -->
+<section class="page" id="p18">
+  <svg class="qmark-doodle f-b" width="90" height="140" viewBox="0 0 90 140"><text x="45" y="110" text-anchor="middle" font-size="130" font-weight="800" fill="#8A9BD4" font-family="PingFang SC,Microsoft YaHei,sans-serif">?</text></svg>
+  <svg class="doodle f-a" style="left:150px;top:140px" width="120" height="32" viewBox="0 0 130 34"><path d="M6 22 C 26 4, 44 32, 66 16 S 104 4, 124 20" fill="none" stroke="#F2B84B" stroke-width="6" stroke-linecap="round"/></svg>
+  <div class="askwrap">
+    <div class="aline" data-chars="55" style="--base:400ms">古人讲「三纲五常」「跪拜之礼」，今天看是封建糟粕。</div>
+    <div class="aline" data-chars="55" style="--base:1900ms">可现代人又觉得传统文化丢了可惜。</div>
+    <div class="aline l3" data-chars="80" style="--base:3200ms">那讲「文明」，是不是要<span class="coral">恢复古制</span>？</div>
+    <div class="reallife rise" style="--d:4300ms">现实中，它长得像这样 ——<span class="rl-chip">女德班</span><span class="rl-chip">跪拜礼争议</span></div>
+  </div>
+</section>
+<style>
+/* ================= 页 19 · 升华② 形态变了 ================= */
+#p19 .compare{display:flex;align-items:center;gap:44px;margin-top:52px}
+#p19 .cbox{flex:none;width:420px;text-align:center;padding:30px 26px;border-radius:20px;font-size:26px;font-weight:800}
+#p19 .cbox.old{background:var(--bg2);color:var(--sub);border:1.5px dashed #CFC4AB}
+#p19 .cbox.old small{display:block;font-size:17px;font-weight:600;margin-top:10px}
+#p19 .cbox.new{background:rgba(226,114,91,.1);color:var(--coral);border:2px solid var(--coral)}
+#p19 .cbox.new small{display:block;font-size:17px;font-weight:700;margin-top:10px;color:#C05A45}
+#p19 .carr{flex:none;width:150px;height:44px;position:relative}
+#p19 .carr svg{position:absolute;inset:0;width:100%;height:100%}
+#p19 .carr path{stroke:var(--coral);stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p19 .declare{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:22px;padding:36px 42px;box-shadow:0 12px 30px rgba(46,42,36,.07)}
+#p19 .declare p{font-family:var(--serif);font-size:24px;line-height:1.95}
+#p19 .declare .src{margin-top:14px}
+#p19 .note{margin-top:26px;font-size:21px;font-weight:700;color:var(--sub)}
+
+/* ================= 页 20 · 升华③ 内核不变 剥离图 ================= */
+#p20 .cols{display:flex;gap:70px;margin-top:30px;align-items:center}
+#p20 .peel{width:600px;height:600px;flex:none;position:relative}
+#p20 .core{position:absolute;left:50%;top:50%;width:360px;height:360px;transform:translate(-50%,-50%) scale(.6);
+  border-radius:50%;background:#fff;border:3px solid var(--coral);box-shadow:0 18px 46px rgba(226,114,91,.2);
+  display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:14px;padding:56px;
+  opacity:0;transition:opacity .7s var(--ease) 1.9s,transform .7s cubic-bezier(.34,1.45,.64,1) 1.9s}
+#p20.is-active .core{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#p20 .core .kw{font-size:23px;font-weight:800;color:var(--coral)}
+#p20 .core .cap{position:absolute;bottom:38px;left:0;right:0;text-align:center;font-size:16px;font-weight:700;color:var(--sub)}
+#p20 .shell{position:absolute;left:50%;top:50%;width:470px;height:470px;transform:translate(-50%,-50%);
+  border-radius:50%;border:2.5px dashed #B9AE95;
+  opacity:1;transition:opacity .8s var(--ease) 1.2s}
+#p20.is-active .shell{opacity:.18}
+#p20 .pchip{position:absolute;padding:12px 22px;border-radius:999px;background:var(--bg2);border:1.5px solid #D9CFBA;
+  font-size:20px;font-weight:700;color:var(--sub);white-space:nowrap;
+  transition:transform .9s var(--ease) 1s,opacity .9s var(--ease) 1s}
+#p20.is-active .pchip{transform:translate(var(--tx),var(--ty)) rotate(var(--rot,8deg));opacity:0}
+#p20 .right{flex:1;display:flex;flex-direction:column;gap:24px}
+#p20 .qbox{background:#fff;border:1.5px solid #EDE6D6;border-radius:18px;padding:24px 32px;box-shadow:0 10px 26px rgba(46,42,36,.06)}
+#p20 .qbox h4{font-size:21px;font-weight:800;margin-bottom:10px}
+#p20 .qbox.throw h4{color:var(--sub)}
+#p20 .qbox.keep h4{color:var(--coral)}
+#p20 .qbox p{font-family:var(--serif);font-size:18.5px;line-height:1.8}
+#p20 .qbox .src{margin-top:8px;font-size:14px}
+#p20 .punch20{font-size:24px;font-weight:800;line-height:1.6}
+
+/* ================= 页 21 · 升华④ 升级方向 ================= */
+#p21 .upgrade{display:flex;align-items:center;gap:50px;margin-top:90px}
+#p21 .trad{flex:none;display:flex;flex-direction:column;align-items:center;gap:26px}
+#p21 .chain{display:flex;align-items:center;gap:0}
+#p21 .cnode{width:118px;height:118px;border-radius:50%;background:#fff;border:2px solid #D9CFBA;
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:27px;font-weight:700;
+  box-shadow:0 8px 20px rgba(46,42,36,.06)}
+#p21 .clink{width:34px;height:3px;background:#D9CFBA;border-radius:2px}
+#p21 .cap{font-size:19px;font-weight:700;color:var(--sub);background:var(--bg2);border-radius:999px;padding:8px 24px}
+#p21 .bigarr{flex:1;min-width:260px;height:90px;position:relative}
+#p21 .bigarr svg{position:absolute;inset:0;width:100%;height:100%}
+#p21 .bigarr path{stroke:var(--coral);stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p21 .modern{flex:none;display:flex;gap:28px}
+#p21 .mcard{width:300px;background:#fff;border:2px solid var(--mint);border-radius:22px;padding:30px 28px;
+  box-shadow:0 14px 34px rgba(46,42,36,.08);text-align:center}
+#p21 .mcard.m2{border-color:var(--lav)}
+#p21 .mcard h4{font-size:28px;font-weight:800;margin-bottom:12px}
+#p21 .mcard.m1 h4{color:#4E8F76}
+#p21 .mcard.m2 h4{color:#6B7FC0}
+#p21 .mcard p{font-size:18px;color:var(--sub);line-height:1.7}
+#p21 .ucap{text-align:center;margin-top:22px;font-size:19px;font-weight:700;color:var(--sub)}
+#p21 .punch21{margin-top:64px;text-align:center;font-size:34px;font-weight:800}
+
+/* ================= 页 22 · 升华⑤ 扣题 ================= */
+#p22 .backquote{max-width:1280px;margin:30px auto 0;background:var(--bg2);border-radius:18px;padding:24px 38px}
+#p22 .backquote p{font-family:var(--serif);font-size:19px;line-height:1.8;color:var(--sub)}
+#p22 .concl{max-width:1500px;margin:76px auto 0;text-align:center;font-size:47px;font-weight:800;line-height:1.75}
+#p22 .concl .coral{font-weight:800}
+
+/* ================= 页 23 · 我们怎么做 ================= */
+#p23 .roads{display:flex;gap:26px;margin-top:36px}
+#p23 .road{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:20px;padding:26px 24px;
+  box-shadow:0 10px 26px rgba(46,42,36,.07);border-top:6px solid var(--tc,var(--mint))}
+#p23 .road h4{font-size:23px;font-weight:800;margin-bottom:12px}
+#p23 .road p{font-size:17.5px;line-height:1.7}
+#p23 .road .basis{margin-top:14px;font-size:13.5px;color:var(--sub);line-height:1.6}
+#p23 .mech{margin-top:36px;display:flex;align-items:center;gap:26px}
+#p23 .steps{display:flex;align-items:center;gap:0;flex:none}
+#p23 .step{padding:14px 30px;border-radius:999px;font-size:24px;font-weight:800;background:#fff;border:2px solid #EAE2D0}
+#p23 .step.s3{background:var(--coral);border-color:var(--coral);color:#fff}
+#p23 .sarr{width:60px;height:22px;position:relative;flex:none}
+#p23 .sarr svg{position:absolute;inset:0;width:100%;height:100%}
+#p23 .sarr path{stroke:#B9AE95;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p23 .shendu{flex:1;background:var(--bg2);border-radius:18px;padding:20px 32px;display:flex;align-items:center;gap:26px}
+#p23 .shendu p{font-family:var(--serif);font-size:21px}
+#p23 .shendu .exam{font-family:var(--sans);font-size:17px;color:var(--sub);line-height:1.6}
+#p23 .shendu .exam b{font-size:26px;color:var(--cool);font-weight:800}
+#p23 .foot{font-size:14px}
+
+/* ================= 页 24 · 收口 + 致谢 ================= */
+#p24 .final{max-width:1500px;margin:120px auto 0;text-align:center;font-size:64px;font-weight:800;line-height:1.6}
+#p24 .recall{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:70px}
+#p24 .recall .rtext{font-size:23px;font-weight:700;color:var(--sub)}
+#p24 .rchip{background:#fff;border:1.5px solid #EDE6D6;border-radius:999px;padding:12px 26px;font-size:20px;font-weight:700;
+  box-shadow:0 8px 20px rgba(46,42,36,.07);display:flex;align-items:center;gap:10px}
+#p24 .rchip .chk{width:24px;height:24px;flex:none}
+#p24 .rchip .chk path{stroke:var(--mint);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p24 .thanks{margin-top:90px;text-align:center;font-size:23px;color:var(--sub);display:flex;align-items:center;justify-content:center;gap:14px}
+#p24 .thanks .blank{display:inline-block;min-width:64px;border-bottom:2.5px dashed #C9BFA8;padding:0 8px 3px;color:#A89D88}
+#p24 .replay{margin-top:34px;text-align:center}
+#p24 .replay button{background:#fff;border:2px solid var(--honey);color:var(--ink);border-radius:999px;
+  padding:12px 34px;font-size:19px;font-weight:800;cursor:pointer;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+#p24 .replay button:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(242,184,75,.35)}
+#p24 .replay button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+</style>
+
+<!-- ========== 页 19 · 升华② 形态变了 ========== -->
+<section class="page" id="p19">
+  <div class="h-title rise" style="--d:150ms">形态变了：核心是人的解放与平等</div>
+  <div class="compare">
+    <div class="cbox old rise" style="--d:500ms">装在等级秩序里<small>过去的「文明」</small></div>
+    <div class="carr"><svg viewBox="0 0 150 44" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:900ms;--dur:.7s" d="M6 22 H 118 M 104 8 L 122 22 L 104 36"/></svg></div>
+    <div class="cbox new rise" style="--d:1200ms">人的解放 · 平等<small>今天的文明核心</small></div>
+    <div class="declare rise" style="--d:1500ms">
+      <p>代替那存在着阶级和阶级对立的资产阶级旧社会的，将是这样一个联合体，在那里，<span class="coral" style="font-weight:800">每个人的自由发展是一切人的自由发展的条件</span>。</p>
+      <div class="src">〔来源〕《共产党宣言》，1848 年</div>
+    </div>
+  </div>
+  <div class="note rise" style="--d:2000ms">注：个人自由与一切人的自由<span class="coral">互为条件</span> —— 不是放任。</div>
+  <div class="converge rise" style="--d:2350ms">
+    <div class="cv"><b>《共产党宣言》</b><span>每个人的自由发展</span></div>
+    <div class="cvjoin">在「把人当人」<br>这一点上汇合</div>
+    <div class="cv"><b>中国 · 儒家</b><span>仁者爱人</span></div>
+    <div class="cvnote">这就是「第二个结合」的底层逻辑 —— 马克思主义与中华优秀传统文化，不是拼接，是在同一个问题上相遇。</div>
+  </div>
+</section>
+
+<!-- ========== 页 20 · 升华③ 内核不变 ========== -->
+<section class="page" id="p20">
+  <div class="h-title rise" style="--d:150ms">内核不变：剥掉外壳，留下内核</div>
+  <div class="cols">
+    <div class="peel">
+      <div class="shell"></div>
+      <span class="pchip" data-bleed="1" style="left:190px;top:16px;--tx:-30px;--ty:-160px;--rot:-10deg">宗法观念</span>
+      <span class="pchip" data-bleed="1" style="left:430px;top:130px;--tx:170px;--ty:-70px;--rot:12deg">特权思想</span>
+      <span class="pchip" data-bleed="1" style="left:452px;top:330px;--tx:180px;--ty:60px;--rot:-8deg">专制作风</span>
+      <span class="pchip" data-bleed="1" style="left:220px;top:492px;--tx:20px;--ty:170px;--rot:10deg">拉帮结伙</span>
+      <span class="pchip" data-bleed="1" style="left:-14px;top:330px;--tx:-180px;--ty:60px;--rot:-12deg">男尊女卑</span>
+      <span class="pchip" data-bleed="1" style="left:-20px;top:120px;--tx:-170px;--ty:-80px;--rot:8deg">封建遗毒</span>
+      <div class="core">
+        <span class="kw">讲仁爱</span><span class="kw">重民本</span><span class="kw">守诚信</span>
+        <span class="kw">崇正义</span><span class="kw">尚和合</span><span class="kw">求大同</span>
+        <span class="cap">内里的内核 · 留下</span>
+      </div>
+    </div>
+    <div class="right">
+      <div class="qbox throw rise" style="--d:400ms">
+        <h4>扔掉什么</h4>
+        <p>封建道德在我国影响很深，今天我们社会关系中残存的宗法观念、特权思想、专制作风、拉帮结伙、男尊女卑等，本质上都是封建遗毒的反映。</p>
+        <div class="src">〔来源〕1986 年 9 月 28 日十二届六中全会决议</div>
+      </div>
+      <div class="qbox keep rise" style="--d:2200ms">
+        <h4>留下什么</h4>
+        <p>深入阐发中华优秀传统文化蕴含的讲仁爱、重民本、守诚信、崇正义、尚和合、求大同等思想理念，深入挖掘自强不息、敬业乐群、扶正扬善、扶危济困、见义勇为、孝老爱亲等传统美德。</p>
+        <div class="src">〔来源〕《新时代公民道德建设实施纲要》，2019 年 10 月</div>
+      </div>
+      <div class="punch20 rise" style="--d:2600ms">这不是我们自创的取舍，是<span class="coral">党中央文件里早就划好的界线</span>。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页 21 · 升华④ 升级方向 ========== -->
+<section class="page" id="p21">
+  <div class="h-title rise" style="--d:150ms">升级方向：把「修身」扩大</div>
+  <div class="h-sub rise" style="--d:320ms">身修而后家齐，家齐而后国治，国治而后天下平。〔《礼记·大学》〕</div>
+  <div class="upgrade">
+    <div class="trad rise" style="--d:600ms">
+      <div class="chain">
+        <div class="cnode pop" style="--d:800ms">修身</div><div class="clink"></div>
+        <div class="cnode pop" style="--d:950ms">齐家</div><div class="clink"></div>
+        <div class="cnode pop" style="--d:1100ms">治国</div><div class="clink"></div>
+        <div class="cnode pop" style="--d:1250ms">平天下</div>
+      </div>
+      <div class="cap rise" style="--d:1400ms">传统路径 · 熟人圈</div>
+    </div>
+    <div class="bigarr"><svg viewBox="0 0 400 90" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:1600ms;--dur:.9s" d="M8 45 H 340 M 318 18 L 346 45 L 318 72"/></svg></div>
+    <div class="modern">
+      <div class="mcard m1 pop" style="--d:2100ms"><h4>公德意识</h4><p>社会公德五项 —— 在公共空间里守规矩</p></div>
+      <div class="mcard m2 pop" style="--d:2300ms"><h4>公民精神</h4><p>对陌生人、公共空间、公共事务负责</p></div>
+    </div>
+  </div>
+  <div class="punch21 rise" style="--d:2700ms">不是抛弃「修身」，是<span class="wavy coral">把它扩大<svg class="wave" viewBox="0 0 200 12" preserveAspectRatio="none"><path pathLength="1" style="--d:3100ms" d="M2 8 C 14 2, 26 12, 40 7 S 66 2, 80 7 S 106 12, 120 7 S 146 2, 160 7 S 186 12, 198 7"/></svg></span>。</div>
+  <div class="fei rise" style="--d:3200ms">
+    <div class="fq">费孝通《乡土中国》：传统中国是<b>「差序格局」</b> —— 道德像水波纹，只对自己人有效，一圈圈向外变淡。</div>
+    <div class="fq2">而今天的文明，要求把这个圈<b class="coral">扩展到陌生人</b>：从「熟人社会的私德」，升级为「陌生人社会的公德」。</div>
+  </div>
+</section>
+
+<!-- ========== 页 22 · 升华⑤ 扣题 ========== -->
+<section class="page" id="p22">
+  <svg class="doodle f-a" style="right:140px;top:100px" width="120" height="32" viewBox="0 0 130 34"><path d="M6 22 C 26 4, 44 32, 66 16 S 104 4, 124 20" fill="none" stroke="#7FBFA5" stroke-width="6" stroke-linecap="round"/></svg>
+  <div class="backquote rise" style="--d:300ms">
+    <p>这个复兴，不但将创造出高度发达的物质文明，而且将创造出以马克思主义为指导的，批判继承历史传统而又充分体现时代精神的，立足本国而又面向世界的，这样一种高度发达的社会主义精神文明。<span class="src">〔1986 年 9 月 28 日十二届六中全会决议〕</span></p>
+  </div>
+  <div class="concl" data-chars="42" style="--base:900ms">我们倡导社会主义核心价值观里的「文明」，不是回到古制，而是建一种<span class="coral">既有中国底蕴、又具全球视野、且以人为本</span>的现代文明形态。</div>
+</section>
+
+<!-- ========== 页 23 · 我们怎么做 ========== -->
+<section class="page" id="p23">
+  <div class="h-title rise" style="--d:150ms">我们怎么做：四条路，一次就能做到</div>
+  <div class="roads">
+    <div class="road rise" style="--d:450ms;--tc:var(--mint)"><h4>校园文明</h4><p>不作弊不剽窃、文明使用互联网、遵守社会公德、仪表整洁待人礼貌</p><div class="basis">依据：教育部《高等学校学生行为准则》教学〔2005〕5 号第五、六、七条</div></div>
+    <div class="road rise" style="--d:600ms;--tc:var(--lav)"><h4>网络文明</h4><p>文明互动、理性表达；不转发未核实信息；AI 生成内容主动标注</p><div class="basis">依据：《网络暴力信息治理规定》第六条、第十条；《人工智能生成合成内容标识办法》2025-09-01 施行</div></div>
+    <div class="road rise" style="--d:750ms;--tc:var(--honey)"><h4>出行与餐桌</h4><p>排队礼让、一米线、适量点餐、打包剩菜</p><div class="basis">依据：《反食品浪费法》2021-04-29；《人民日报》2025-05-25</div></div>
+    <div class="road rise" style="--d:900ms;--tc:var(--coral)"><h4>志愿服务</h4><p>注册志愿者，参与一次助老 / 支教 / 社区服务</p><div class="basis">依据：《志愿服务条例》2017-12-01 施行</div></div>
+  </div>
+  <div class="mech rise" style="--d:1200ms">
+    <div class="steps">
+      <div class="step pop" style="--d:1400ms">认知</div>
+      <div class="sarr"><svg viewBox="0 0 60 22" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:1600ms;--dur:.4s" d="M4 11 H 44 M 36 4 L 46 11 L 36 18"/></svg></div>
+      <div class="step pop" style="--d:1750ms">养成</div>
+      <div class="sarr"><svg viewBox="0 0 60 22" preserveAspectRatio="none"><path class="draw" pathLength="1" style="--d:1950ms;--dur:.4s" d="M4 11 H 44 M 36 4 L 46 11 L 36 18"/></svg></div>
+      <div class="step s3 pop" style="--d:2100ms">慎独</div>
+    </div>
+    <div class="shendu rise" style="--d:2300ms">
+      <p>莫见乎隐，莫显乎微，故君子慎其独也。<span class="src">〔《礼记·中庸》〕</span></p>
+      <div class="exam">今天的考场在网上 —— 网民 <b><span data-roll="11.23" data-dec="2" data-delay="2500">0</span></b> 亿，普及率 <b><span data-roll="79.7" data-dec="1" data-suf="%" data-delay="2700">0</span></b>（截至 2025 年 6 月）</div>
+    </div>
+  </div>
+  <div class="shenzhong rise" style="--d:3000ms">
+    <div class="sz-badge">再加一个词</div>
+    <div class="sz-body"><b>慎众</b> —— 《中庸》讲「慎独」，是没人看见时自律；今天 11.23 亿网民，要再加一个「慎众」：在网上没人知道你是谁时，依然自律。</div>
+  </div>
+  <div class="foot">数据来源：CNNIC 第 56 次《中国互联网络发展状况统计报告》。</div>
+</section>
+
+<!-- ========== 页 24 · 收口 + 致谢 ========== -->
+<section class="page" id="p24">
+  <svg class="doodle f-a" style="left:130px;top:110px" width="46" height="46" viewBox="0 0 52 52"><circle cx="26" cy="26" r="17" fill="none" stroke="#F2B84B" stroke-width="6"/></svg>
+  <svg class="doodle f-b" style="right:150px;top:150px" width="42" height="42" viewBox="0 0 44 44"><path d="M22 6v32M6 22h32" stroke="#8A9BD4" stroke-width="7" stroke-linecap="round"/></svg>
+  <div class="final" data-chars="70" style="--base:400ms">文明，是让<span class="coral">陌生人也能彼此信任</span>的能力。</div>
+  <div class="recall rise" style="--d:2200ms">
+    <span class="rtext">回到第 03 页那三个场景 ——</span>
+    <span class="rchip pop" style="--d:2500ms"><svg class="chk" viewBox="0 0 24 24"><path class="draw" pathLength="1" style="--d:2800ms;--dur:.4s" d="M4 13 L 10 19 L 20 6"/></svg>电梯门将关的瞬间</span>
+    <span class="rchip pop" style="--d:2700ms"><svg class="chk" viewBox="0 0 24 24"><path class="draw" pathLength="1" style="--d:3000ms;--dur:.4s" d="M4 13 L 10 19 L 20 6"/></svg>深夜回家那串脚步</span>
+    <span class="rchip pop" style="--d:2900ms"><svg class="chk" viewBox="0 0 24 24"><path class="draw" pathLength="1" style="--d:3200ms;--dur:.4s" d="M4 13 L 10 19 L 20 6"/></svg>群里的截图</span>
+    <span class="rtext">都由这一句话解释。</span>
+  </div>
+  <div class="thanks rise" style="--d:3400ms">
+    <span class="blank">XX</span>大学<span class="blank">XX</span>学院 · 第<span class="blank">X</span>小组 · 20<span class="blank">XX</span>年<span class="blank">X</span>月
+  </div>
+  <div class="replay rise" style="--d:3700ms"><button id="replayBtn" type="button">↻ 回到封面再播一遍</button></div>
+  <div class="foot">本页演示中的引文与数据出处见 README。</div>
+</section>
+
+<style>
+/* ================= 页 25 · 写在最后 + 小组视频 ================= */
+#p25{display:flex;flex-direction:column;justify-content:center}
+#p25 .p25-hero{font-family:var(--serif);font-size:52px;line-height:1.72;font-weight:700;
+  max-width:1240px;letter-spacing:.01em}
+#p25 .p25-intro{margin-top:38px;font-size:26px;color:var(--sub);max-width:1120px;line-height:1.75}
+#p25 .p25-qs{display:flex;flex-wrap:wrap;gap:16px 18px;margin-top:36px;max-width:1200px}
+#p25 .p25-q{display:inline-flex;align-items:center;gap:12px;background:#fff;
+  border:1.5px solid #EDE6D6;border-radius:999px;padding:13px 28px 13px 22px;
+  font-size:22px;font-weight:700;box-shadow:0 8px 20px rgba(46,42,36,.05)}
+#p25 .qdot{width:11px;height:11px;border-radius:50%;flex:none}
+#p25 .p25-tail{margin-top:42px;font-size:24px;color:var(--sub);max-width:1140px;line-height:1.8}
+#p25 .p25-tail b{color:var(--ink)}
+
+/* 侧边小播放键：绝对定位，不参与文字排版 */
+#p25 .p25-play{position:absolute;right:118px;top:50%;transform:translateY(-50%);
+  width:76px;height:76px;border:0;border-radius:50%;cursor:pointer;background:var(--coral);
+  display:flex;align-items:center;justify-content:center;z-index:6;
+  box-shadow:0 14px 28px rgba(226,114,91,.36);
+  transition:transform .22s var(--ease),box-shadow .22s var(--ease)}
+#p25 .p25-play:hover{transform:translateY(-50%) translateY(-4px) scale(1.05);
+  box-shadow:0 20px 36px rgba(226,114,91,.46)}
+#p25 .p25-play:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+#p25 .p25-play svg{width:28px;height:28px;margin-left:4px;fill:#fff}
+#p25 .p25-play::after{content:'';position:absolute;inset:-9px;border-radius:50%;
+  border:2px solid rgba(226,114,91,.42);animation:p25pulse 2.6s ease-out infinite}
+@keyframes p25pulse{0%{transform:scale(.9);opacity:.85}70%{transform:scale(1.24);opacity:0}100%{opacity:0}}
+#p25 .p25-plabel{position:absolute;right:118px;top:calc(50% + 54px);width:76px;text-align:center;
+  font-size:15px;font-weight:700;color:var(--sub);letter-spacing:.08em;line-height:1.55;z-index:6}
+
+/* 视频弹层（不用毛玻璃，纯色遮罩） */
+#p25Modal{position:absolute;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+  background:rgba(38,34,28,.64)}
+#p25Modal.is-open{display:flex}
+#p25Modal .mbox{position:relative;width:1400px;max-width:88%;aspect-ratio:16/9;background:#16130f;
+  border-radius:22px;overflow:hidden;box-shadow:0 34px 90px rgba(0,0,0,.5)}
+#p25Modal video{width:100%;height:100%;display:block;background:#16130f}
+#p25Modal .mclose{position:absolute;right:14px;top:14px;width:46px;height:46px;border:0;border-radius:50%;
+  cursor:pointer;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;
+  transition:background .2s var(--ease),transform .2s var(--ease)}
+#p25Modal .mclose:hover{background:#fff;transform:scale(1.05)}
+#p25Modal .mclose:focus-visible{outline:3px solid var(--honey);outline-offset:2px}
+#p25Modal .mclose svg{width:18px;height:18px;stroke:var(--ink);stroke-width:2.6;fill:none;
+  stroke-linecap:round}
+#p25Modal .mhint{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
+  justify-content:center;gap:16px;padding:70px;text-align:center;color:#F4F1E8;font-size:21px;line-height:1.85}
+#p25Modal .mhint b{font-size:25px;color:var(--honey)}
+#p25Modal .mhint code{background:rgba(255,255,255,.14);border-radius:6px;padding:2px 8px;
+  font-family:ui-monospace,Consolas,monospace;font-size:19px}
+#p25Modal.no-video video{display:none}
+#p25Modal.no-video .mhint{display:flex}
+</style>
+
+<!-- ========== 页 25 · 写在最后 + 小组视频 ========== -->
+<section class="page" id="p25">
+  <svg class="doodle f-b" style="left:96px;bottom:120px" width="46" height="46" viewBox="0 0 52 52"><circle cx="26" cy="26" r="17" fill="none" stroke="#7FBFA5" stroke-width="6"/></svg>
+  <svg class="doodle f-a" style="right:96px;top:96px" width="36" height="36" viewBox="0 0 44 44"><path d="M22 6v32M6 22h32" stroke="#F2B84B" stroke-width="7" stroke-linecap="round"/></svg>
+
+  <div class="p25-hero rise" style="--d:200ms">千百年来，文明因人类在发展，文明因人类在进步；<br>人类又因文明而进步，又因文明而发展。</div>
+
+  <div class="p25-intro rise" style="--d:900ms">在最后，我们小组试图用一段视频，回答几个更偏向哲学的问题。</div>
+
+  <div class="p25-qs">
+    <div class="p25-q pop" style="--d:1200ms"><span class="qdot" style="background:var(--coral)"></span>什么是文明？</div>
+    <div class="p25-q pop" style="--d:1320ms"><span class="qdot" style="background:var(--honey)"></span>我们在文明中，我们得到什么？</div>
+    <div class="p25-q pop" style="--d:1440ms"><span class="qdot" style="background:var(--mint)"></span>我们做了什么？</div>
+    <div class="p25-q pop" style="--d:1560ms"><span class="qdot" style="background:var(--lav)"></span>文明是如何发展的？</div>
+    <div class="p25-q pop" style="--d:1680ms"><span class="qdot" style="background:var(--cool)"></span>文明又是如何让我们发展的？</div>
+  </div>
+
+  <div class="p25-tail rise" style="--d:1960ms">我们也不确定能否回答 —— <b>但这算是我们的一个回答，或者一点启发。</b></div>
+
+  <!-- 侧边播放键：独立定位，不插在文字里 -->
+  <button class="p25-play rise" id="p25Play" type="button" aria-label="播放小组视频" style="--d:2200ms">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2 L19 12 L8 18.8 Z"/></svg>
+  </button>
+  <div class="p25-plabel rise" style="--d:2320ms">小组视频<br>点击播放</div>
+</section>
+
+<!-- ========== 页 26 · 一句话 ========== -->
+<section class="page" id="p26">
+  <div class="p26-line rise" style="--d:500ms">别问为什么视频不在这 —— <span class="coral">视频太大了，塞不进这个静态托管网页。</span></div>
+</section>
+
+<!-- HUD：页码由外壳统一渲染 -->
+<div id="hud">
+  <button class="nbtn" id="prevBtn" aria-label="上一页"><svg viewBox="0 0 18 18"><path d="M11 3 L5 9 L11 15"/></svg></button>
+  <div class="pnum"><span class="cur" id="curNum">01</span><span>/</span><span id="totNum">25</span></div>
+  <button class="nbtn" id="nextBtn" aria-label="下一页"><svg viewBox="0 0 18 18"><path d="M7 3 L13 9 L7 15"/></svg></button>
+</div>
+<div id="progress"></div>
+
+<!-- 页 25 视频弹层（点播放键才出现，ESC / 点遮罩关闭） -->
+<div id="p25Modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="小组视频">
+  <div class="mbox">
+    <video id="p25Video" controls playsinline preload="none"></video>
+    <button class="mclose" id="p25Close" type="button" aria-label="关闭视频">
+      <svg viewBox="0 0 18 18"><path d="M4 4 L14 14 M14 4 L4 14"/></svg>
+    </button>
+    <div class="mhint">
+      <b>视频还没放进来</b>
+      <div>把视频文件命名为 <code>video.mp4</code>，放在 <code>index.html</code> 同一目录，刷新页面即可播放。</div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<style>
+/* ================= 2026-10-20 内容补充 ================= */
+
+/* 页 05：词源卡（放进右侧图例列，不增加页面高度） */
+#p05 .etym{background:var(--bg2);border-radius:18px;padding:20px 26px}
+#p05 .etym .ey{font-size:13.5px;font-weight:800;color:var(--coral);letter-spacing:.14em;margin-bottom:10px}
+#p05 .etym .eq{font-family:var(--serif);font-size:19px;line-height:1.55}
+#p05 .etym .eq span{font-size:14px;color:var(--sub);margin-left:8px;font-family:var(--sans)}
+#p05 .etym .en{font-size:15.5px;color:var(--sub);line-height:1.6;margin-top:10px}
+
+/* 页 08：时间线第二道（从右到左的回扫带） */
+#p08 .milestones{margin-top:30px}
+#p08 .mslabel{font-size:18px;font-weight:800;color:var(--sub);margin-bottom:10px}
+#p08 .msarrow{width:100%;height:14px;display:block}
+#p08 .msarrow path{stroke:var(--lav);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;fill:none}
+#p08 .msnodes{display:flex;flex-direction:row-reverse;justify-content:space-between;gap:16px;margin-top:12px}
+#p08 .mnode{flex:1;text-align:center}
+#p08 .mnode b{display:block;font-size:29px;font-weight:800;color:#6B7FC0;margin-bottom:7px}
+#p08 .mnode span{display:block;font-size:14px;line-height:1.55;color:var(--sub)}
+
+/* 页 10：梁启超 */
+#p10 .liang{margin-top:34px;background:#fff;border:1.5px solid #EDE6D6;border-radius:18px;padding:24px 34px;
+  box-shadow:0 10px 26px rgba(46,42,36,.06)}
+#p10 .liang .lq{font-family:var(--serif);font-size:24px;line-height:1.7}
+#p10 .liang .lsrc{font-size:15px;color:var(--sub);margin-top:8px}
+#p10 .liang .lread{margin-top:12px;font-size:18px;line-height:1.75}
+#p10 .liang .lread b{color:var(--ink)}
+
+/* 页 11：判例 */
+#p11 .case{margin-top:32px;background:#fff;border:2px solid var(--honey);border-radius:20px;padding:26px 36px;
+  box-shadow:0 12px 30px rgba(46,42,36,.07)}
+#p11 .case .ctag{display:inline-block;font-size:14px;font-weight:800;color:#fff;background:var(--honey);
+  border-radius:999px;padding:5px 16px;margin-bottom:12px}
+#p11 .case p{font-size:19px;line-height:1.75}
+#p11 .case .cnote{margin-top:12px;font-size:19px;font-weight:700}
+#p11 .case .cnote b{color:var(--coral)}
+
+/* 页 15：学术出处 + 平衡句 */
+#p15 .scholar{max-width:1380px;margin:26px auto 0;display:flex;gap:22px}
+#p15 .scholar>div{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:16px;padding:20px 26px;
+  font-size:16.5px;line-height:1.7;box-shadow:0 8px 22px rgba(46,36,36,.05)}
+#p15 .scholar .tag{font-size:13px;font-weight:800;color:var(--sub);letter-spacing:.1em;display:block;margin-bottom:8px}
+#p15 .scholar b{color:var(--coral)}
+
+/* 页 18：现实注脚 */
+#p18 .reallife{margin-top:-18px;display:flex;align-items:center;gap:16px;font-size:18px;color:var(--sub)}
+#p18 .reallife .rl-chip{background:#fff;border:1.5px solid #E4DCC8;border-radius:999px;padding:8px 22px;
+  font-size:17px;font-weight:700;color:var(--ink)}
+
+/* 页 19：两个传统在「把人当人」上汇合 */
+#p19 .converge{margin-top:36px;display:flex;align-items:stretch;gap:20px}
+#p19 .cv{flex:1;background:#fff;border:1.5px solid #EDE6D6;border-radius:18px;padding:20px 24px;text-align:center}
+#p19 .cv b{display:block;font-size:16px;color:var(--sub);margin-bottom:8px}
+#p19 .cv span{font-family:var(--serif);font-size:25px;font-weight:700}
+#p19 .cvjoin{flex:none;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:16px;font-weight:800;color:var(--coral);background:rgba(226,114,91,.1);border-radius:999px;
+  padding:0 22px;line-height:1.5}
+#p19 .cvnote{flex:1.3;display:flex;align-items:center;font-size:17px;line-height:1.7;color:var(--sub)}
+
+/* 页 21：费孝通 差序格局 */
+#p21 .fei{margin-top:30px;background:var(--bg2);border-radius:18px;padding:22px 34px}
+#p21 .fei .fq{font-family:var(--serif);font-size:19.5px;line-height:1.75}
+#p21 .fei .fq2{margin-top:8px;font-size:17.5px;line-height:1.7;color:var(--sub)}
+#p21 .fei .fq2 b{color:var(--coral)}
+
+/* 页 23：慎众（单开一路，接在慎独下面） */
+#p23 .shenzhong{margin-top:24px;display:flex;align-items:center;gap:22px;background:#fff;
+  border:1.5px solid #EDE6D6;border-radius:18px;padding:20px 30px;box-shadow:0 10px 26px rgba(46,42,36,.06)}
+#p23 .sz-badge{flex:none;font-size:14px;font-weight:800;color:#fff;background:var(--cool);border-radius:999px;padding:8px 18px}
+#p23 .sz-body{font-size:18px;line-height:1.72}
+#p23 .sz-body b{font-size:21px;color:var(--cool)}
+
+/* ---- 页 26 · 就一行字 ---- */
+#p26{display:flex;align-items:center;justify-content:center;text-align:center}
+#p26 .p26-line{font-size:38px;font-weight:700;line-height:1.75;max-width:1640px;color:var(--ink)}
+#p26 .p26-line .coral{color:var(--coral);font-weight:800}
+</style>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  var pages=Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var cur=0, reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var curNum=document.getElementById('curNum');
+  document.getElementById('totNum').textContent=String(pages.length).padStart(2,'0');
+  var progress=document.getElementById('progress');
+  var hud=document.getElementById('hud');
+
+  function fit(){
+    var s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
+    stage.style.transform='scale('+s+')';
+  }
+  window.addEventListener('resize',fit); fit();
+
+  /* ---- 逐字跳出：把 [data-chars] 拆成单字 span（保留嵌套着色元素） ---- */
+  document.querySelectorAll('[data-chars]').forEach(function(el){
+    var step=el.getAttribute('data-chars');
+    var i=0;
+    function splitNode(node){
+      if(node.nodeType===3){
+        var frag=document.createDocumentFragment();
+        Array.prototype.forEach.call(node.textContent,function(ch){
+          var s=document.createElement('span');
+          s.className='ch';
+          s.style.setProperty('--i',i++);
+          if(step) s.style.setProperty('--step',step+'ms');
+          s.textContent=ch;
+          frag.appendChild(s);
+        });
+        node.parentNode.replaceChild(frag,node);
+      }else if(node.nodeType===1){
+        Array.prototype.slice.call(node.childNodes).forEach(splitNode);
+      }
+    }
+    Array.prototype.slice.call(el.childNodes).forEach(splitNode);
+  });
+
+  /* ---- 数字滚动：滚到真值停住 ---- */
+  function fmt(v,dec,group){
+    var s=v.toFixed(dec);
+    if(group!==false){
+      var parts=s.split('.');
+      parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      s=parts.join('.');
+    }
+    return s;
+  }
+  function roll(el){
+    var target=parseFloat(el.getAttribute('data-roll'));
+    var dec=+(el.getAttribute('data-dec')||0);
+    var suf=el.getAttribute('data-suf')||'';
+    var dur=+(el.getAttribute('data-dur')||1100);
+    var group=el.getAttribute('data-sep')!=='0';
+    if(reduced){ el.textContent=fmt(target,dec,group)+suf; return; }
+    var t0=performance.now();
+    function tick(t){
+      var p=Math.min(1,(t-t0)/dur);
+      var e=1-Math.pow(1-p,3);
+      el.textContent=fmt(target*e,dec,group)+suf;
+      if(p<1) requestAnimationFrame(tick);
+      else el.textContent=fmt(target,dec,group)+suf;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function show(i){
+    i=Math.max(0,Math.min(pages.length-1,i));
+    pages.forEach(function(p,k){ p.classList.toggle('is-active',k===i); });
+    cur=i;
+    try{ localStorage.setItem('wm-deck-page',String(i)); }catch(e){}
+    curNum.textContent=String(i+1).padStart(2,'0');
+    hud.style.display=pages[i].hasAttribute('data-no-pagenum')?'none':'flex';
+    progress.style.width=((i+1)/pages.length*100)+'%';
+    pages[i].querySelectorAll('[data-roll]').forEach(function(el){
+      var suf=el.getAttribute('data-suf')||'';
+      el.textContent='0'+suf;
+      var delay=+(el.getAttribute('data-delay')||300);
+      setTimeout(function(){
+        if(pages[cur]===pages[i]||true) roll(el);
+      }, reduced?0:delay);
+    });
+  }
+
+  /* ---- 键盘 ---- */
+  var digitBuf='',digitTimer=null;
+  window.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'||e.key==='Enter'){ show(cur+1); e.preventDefault(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ show(cur-1); e.preventDefault(); }
+    else if(e.key==='Home'){ show(0); e.preventDefault(); }
+    else if(e.key==='End'){ show(pages.length-1); e.preventDefault(); }
+    else if(/^[0-9]$/.test(e.key)){
+      digitBuf+=e.key;
+      if(digitTimer) clearTimeout(digitTimer);
+      digitTimer=setTimeout(function(){
+        var n=parseInt(digitBuf,10);
+        if(n>=1&&n<=pages.length) show(n-1);
+        digitBuf='';
+      },650);
+    }
+  });
+
+  /* ---- 触屏滑动 ---- */
+  var tx=0,ty=0;
+  stage.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
+  stage.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)){ show(dx<0?cur+1:cur-1); }
+  },{passive:true});
+
+  document.getElementById('prevBtn').addEventListener('click',function(){ show(cur-1); });
+  document.getElementById('nextBtn').addEventListener('click',function(){ show(cur+1); });
+  var replay=document.getElementById('replayBtn');
+  if(replay) replay.addEventListener('click',function(){ show(0); });
+
+  /* ---- 页 25 视频弹层：点播放键才加载视频；打开时吞掉键盘事件，防止误翻页 ---- */
+  (function(){
+    var VIDEO_SRC='video.mp4';   /* 与 index.html 放同一目录；改名只改这一处 */
+    var btn=document.getElementById('p25Play');
+    var modal=document.getElementById('p25Modal');
+    var video=document.getElementById('p25Video');
+    var closeBtn=document.getElementById('p25Close');
+    if(!btn||!modal||!video) return;
+    function isOpen(){ return modal.classList.contains('is-open'); }
+    function open(){
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden','false');
+      if(!video.getAttribute('src')) video.setAttribute('src',VIDEO_SRC);
+      try{
+        video.currentTime=0;
+        var p=video.play();
+        if(p&&p.catch) p.catch(function(){});
+      }catch(e){}
+      if(closeBtn) try{ closeBtn.focus({preventScroll:true}); }catch(e){}
+    }
+    function close(){
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden','true');
+      try{ video.pause(); }catch(e){}
+      try{ btn.focus({preventScroll:true}); }catch(e){}
+    }
+    btn.addEventListener('click',open);
+    if(closeBtn) closeBtn.addEventListener('click',close);
+    modal.addEventListener('click',function(e){ if(e.target===modal) close(); });
+    video.addEventListener('error',function(){ modal.classList.add('no-video'); });
+    document.addEventListener('keydown',function(e){
+      if(!isOpen()) return;
+      if(e.key==='Escape'||e.key==='Esc') close();
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    },true);
+  })();
+
+  /* ---- 页 04 开场：像素点拼「文明」→ 大字浮现 → 回缩归位 ---- */
+  (function(){
+    var sec=document.getElementById('p04');
+    var dotsBox=sec.querySelector('.wm-dots');
+    var giant=sec.querySelector('.wm-giant');
+    var frame=sec.querySelector('.wm-frame');
+    var PALETTE=['#E2725B','#F2B84B','#7FBFA5','#8A9BD4','#4A7A96'];
+    var timers=[];
+    var tcx=0,tcy=0,tW=0;
+    function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
+
+    function boxPos(el){
+      var x=0,y=0,n=el;
+      while(n&&n!==sec){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
+      return {x:x,y:y,w:el.offsetWidth,h:el.offsetHeight};
+    }
+    try{
+      var words=sec.querySelectorAll('.layer.l1 .word');
+      var a=boxPos(words[4]), b=boxPos(words[5]);
+      var pad=14, fw=(b.x+b.w)-a.x+pad*2, fh=a.h+pad*2;
+      frame.style.left=(a.x-pad)+'px'; frame.style.top=(a.y-pad)+'px';
+      frame.style.width=fw+'px'; frame.style.height=fh+'px';
+      frame.setAttribute('viewBox','0 0 '+fw+' '+fh);
+      var fr=frame.querySelector('rect');
+      fr.setAttribute('x',3); fr.setAttribute('y',3);
+      fr.setAttribute('width',fw-6); fr.setAttribute('height',fh-6);
+      fr.setAttribute('rx',20);
+      tcx=(a.x+b.x+b.w)/2; tcy=a.y+a.h/2; tW=(b.x+b.w)-a.x;
+    }catch(e){}
+
+    function shapePoints(count){
+      var cv=document.createElement('canvas'); cv.width=960; cv.height=540;
+      var cx=cv.getContext('2d');
+      cx.font='800 430px "Noto Serif SC","Source Han Serif SC","Songti SC",SimSun,serif';
+      cx.textAlign='center'; cx.textBaseline='middle';
+      cx.fillText('文明',480,272);
+      var img=cx.getImageData(0,0,960,540).data;
+      var pts=[];
+      for(var y=0;y<540;y+=3) for(var x=0;x<960;x+=3){
+        if(img[(y*960+x)*4+3]>100) pts.push([x*2,y*2]);
+      }
+      if(!pts.length) return null;
+      var out=[], stride=pts.length/count;
+      for(var i=0;i<count;i++) out.push(pts[Math.floor(i*stride)%pts.length]);
+      return out;
+    }
+
+    function reset(){
+      timers.forEach(clearTimeout); timers=[];
+      dotsBox.innerHTML='';
+      giant.style.transition='none';
+      giant.style.opacity='0';
+      giant.style.transform='translate(-50%,-50%) scale(.94)';
+    }
+
+    function land(t0){
+      later(function(){
+        if(tW){
+          var s=(tW/giant.offsetWidth)*0.92;
+          giant.style.transition='transform 1.05s cubic-bezier(.55,.02,.2,1)';
+          giant.style.transform='translate(-50%,-50%) translate('+(tcx-960)+'px,'+(tcy-540)+'px) scale('+s+')';
+        }
+      },t0);
+      /* 大字不主动淡出：留在原地，由浮现的字块（不透明底色）盖下去，盖严实后再清理 */
+      later(reset,t0+1800);
+    }
+
+    function play(){
+      reset();
+      var GAP=48, DOT=26;
+      var cols=Math.ceil(1920/GAP), rows=Math.ceil(1080/GAP);
+      var count=cols*rows;
+      var targets=shapePoints(count);
+      var frag=document.createDocumentFragment(), dots=[];
+      for(var r=0;r<rows;r++) for(var c=0;c<cols;c++){
+        var d=document.createElement('div');
+        d.className='wm-dot';
+        d.setAttribute('data-bleed','1');   /* 点阵铺满整幅，最外排由画布裁切，属有意出血 */
+        d.style.background=PALETTE[(Math.random()*PALETTE.length)|0];
+        var x=c*GAP+(GAP-DOT)/2, y=r*GAP+(GAP-DOT)/2;
+        d.style.opacity='0';
+        d.style.transform='translate('+x+'px,'+y+'px) scale(.4)';
+        d.dataset.tx=x; d.dataset.ty=y;
+        frag.appendChild(d); dots.push(d);
+      }
+      dotsBox.appendChild(frag);
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        dots.forEach(function(d){
+          var dl=(Math.random()*350)|0;
+          d.style.transition='opacity .45s ease '+dl+'ms, transform .45s ease '+dl+'ms';
+          d.style.opacity='1';
+          d.style.transform='translate('+d.dataset.tx+'px,'+d.dataset.ty+'px) scale(1)';
+        });
+      });});
+      if(!targets){ land(2400); return; }
+      later(function(){
+        dots.forEach(function(d,i){
+          var t=targets[i];
+          d.style.transition='transform 1.55s cubic-bezier(.5,.02,.15,1) '+((Math.random()*320)|0)+'ms, opacity .5s ease';
+          d.style.transform='translate('+(t[0]-13)+'px,'+(t[1]-13)+'px) scale(.62)';
+        });
+      },1000);
+      later(function(){
+        giant.style.transition='opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1)';
+        giant.style.opacity='1';
+        giant.style.transform='translate(-50%,-50%) scale(1)';
+        dots.forEach(function(d){
+          var dl=(Math.random()*260)|0;
+          d.style.transition='opacity .55s ease '+dl+'ms, transform .55s ease '+dl+'ms';
+          d.style.opacity='0';
+          d.style.transform+=' scale(.2)';
+        });
+        later(function(){ dotsBox.innerHTML=''; },1000);
+      },3050);
+      land(3900);
+    }
+
+    if(reduced){ reset(); return; }
+    new MutationObserver(function(){
+      if(sec.classList.contains('is-active')) play(); else reset();
+    }).observe(sec,{attributes:true,attributeFilter:['class']});
+    if(sec.classList.contains('is-active')) play();
+  })();
+
+  var start=0;
+  try{ start=parseInt(localStorage.getItem('wm-deck-page')||'0',10)||0; }catch(e){}
+  try{ if(/[?&]guides=1/.test(location.search)) document.body.classList.add('show-guides'); }catch(e){}
+  window.__deckShow=show;
+  show(start);
+})();
+</script>
+</body>
+</html>
